@@ -18,7 +18,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 - Handle failures explicitly. Do not silently swallow errors or retry operations without proving safe repetition.
 - Protect credentials and sensitive data. Never commit secrets or expose them in logs, fixtures, screenshots or PRs.
 - Add or update regression tests for behavior changes. Tests must assert observable behavior, not merely repeat implementation details.
-- Update the owning documentation and compatibility notes in the same change. Record durable design decisions in docs/decisions/.
+- Update the owning documentation and compatibility notes in the same change. Read docs/AGENTS.md when editing documentation. Record durable design decisions in docs/decisions/.
 - Report only checks actually run. Distinguish PASS, FAIL, NOT RUN and BLOCKED; include environment and relevant evidence.
 
 ## Delivery boundaries

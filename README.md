@@ -13,7 +13,7 @@ This repository is a reusable, stack-neutral engineering standards baseline. It 
 - **docs/development.md** — plan, implement, verify, review and deliver workflow.
 - **docs/testing.md** — test levels, reliability and evidence requirements.
 - **docs/error-handling.md** — failure ownership, cancellation, retries and reporting.
-- **docs/documentation.md** — documentation placement and maintenance.
+- **docs/documentation.md** and **docs/AGENTS.md** — documentation placement, scope and maintenance.
 - **docs/compatibility.md** — API, schema, persistence and upgrade policy.
 - **docs/git-workflow.md** and **CONTRIBUTING.md** — branch, commit and pull-request conventions.
 - **docs/decisions/** — durable architecture and engineering decisions.
