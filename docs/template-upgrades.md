@@ -7,7 +7,7 @@ TEMPLATE_VERSION and project-policy.json.template_version define the copied proj
 - New projects start with a snapshot of SophiaData/agent-project-template.
 - Existing projects keep local modifications. Never replace AGENTS.md, Skills, policy, CI or architecture documents without inspecting the diff.
 - Propose upgrades through a dedicated PR. Compare old and new versions, migrate project-policy.json only when its schema changes, preserve local decisions and rerun checks.
-- Template updates do not merge, deploy, publish, release, submit or publish DataWorks nodes.
+- Template updates do not merge, deploy, release or publish production artifacts; they do not submit or publish DataWorks nodes.
 - The global sophiadata-init-project Skill reads this repository as the single source; it must not embed a second copy of these documents.
 
 ## Version history
