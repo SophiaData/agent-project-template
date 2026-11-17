@@ -1,12 +1,13 @@
 ---
 name: project-plan
-description: Use before implementing changes to establish scope, architecture boundaries, risks, tests and acceptance criteria for a SophiaData project.
+description: Use before substantive changes to establish scope, ownership, architecture boundaries, risks, tests and observable acceptance criteria.
 ---
 
 # Project planning
 
-1. Read `AGENTS.md`, `docs/architecture.md` and relevant source and tests.
-2. Identify current stack, requirements, constraints, non-goals and owners.
-3. Propose minimal file-level approach, compatibility/security/data risks and rollback.
-4. Define observable acceptance criteria and focused test strategy.
-5. Do not modify application source in the planning stage.
+1. Read AGENTS.md, docs/architecture.md, docs/coding-standards.md and the relevant technology profile.
+2. Inspect the affected source, callers, tests, configuration and deployment path.
+3. Identify requirements, constraints, non-goals, owners, data contracts and compatibility impact.
+4. Propose the smallest complete design; explain new dependencies, abstractions and public choices.
+5. Define observable acceptance criteria and focused verification, including failure and recovery cases.
+6. Do not modify application source while the task is still being scoped.

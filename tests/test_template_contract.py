@@ -4,7 +4,6 @@
 import importlib.util
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,8 +28,19 @@ class ProjectTemplateContract(unittest.TestCase):
     def test_governance_files_valid(self):
         self.assertEqual(verify.verify(ROOT), [])
 
+    def test_template_version_matches_policy_without_schema_migration(self):
+        policy = json.loads((ROOT / 'project-policy.json').read_text(encoding='utf-8'))
+        version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
+        self.assertEqual(policy['schema_version'], 2)
+        self.assertEqual(policy['template_version'], version)
+        self.assertEqual(version, '2.1.0')
+
+    def test_technology_profiles_are_present(self):
+        profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
+        for profile in profiles:
+            self.assertTrue((ROOT / 'docs/standards' / profile).is_file(), profile)
+
     def test_empty_directory_has_no_application_code(self):
-        # Contract tests must still pass when copied into a real project.
         with tempfile.TemporaryDirectory() as path:
             self.assertFalse(quality.has_application_code(Path(path)))
 
@@ -82,8 +92,6 @@ class ProjectTemplateContract(unittest.TestCase):
                              [{'category': 'test', 'argv': ['npm', 'test']}])
 
     def test_template_governance_script_executes(self):
-        # CI owns the separate run_quality.py step. Re-running it from a unit
-        # test duplicates application checks and fails before they are configured.
         argv = [sys.executable, 'scripts/verify_project.py']
         proc = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -91,7 +99,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.0.0', require_checks_when_code_exists=True,
+                    template_version='2.1.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 

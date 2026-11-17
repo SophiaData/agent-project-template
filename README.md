@@ -2,49 +2,56 @@
 
 Project type: **PROJECT_TYPE**.
 
-This repository uses SophiaData cross-Agent engineering conventions:
-- [AGENTS.md](AGENTS.md) — common rules for GPT, Claude Code, Codex and other Agents
-- [docs/development.md](docs/development.md) — plan → implement → verify → review → PR
-- [docs/testing.md](docs/testing.md) — actual test evidence and CI commands
+This repository is a reusable, stack-neutral engineering standards baseline. It provides project architecture guidance, coding and testing standards, documentation and compatibility practices, reusable engineering workflows, and executable quality checks.
 
-## First task
+## Standards map
 
-When created through GitHub **Use this template**, replace the `PROJECT_NAME` and `PROJECT_TYPE` placeholders in `README.md` and `project-policy.json`. GitHub does not automatically substitute them.
+- **AGENTS.md** — concise repository-wide engineering rules for every contributor and coding assistant.
+- **docs/architecture.md** — system boundaries, module ownership, dependencies and runtime topology.
+- **docs/coding-standards.md** — language-neutral coding and design principles.
+- **docs/standards/** — technology-specific standards for Python, TypeScript, Java and data engineering.
+- **docs/development.md** — plan, implement, verify, review and deliver workflow.
+- **docs/testing.md** — test levels, reliability and evidence requirements.
+- **docs/error-handling.md** — failure ownership, cancellation, retries and reporting.
+- **docs/documentation.md** — documentation placement and maintenance.
+- **docs/compatibility.md** — API, schema, persistence and upgrade policy.
+- **docs/git-workflow.md** and **CONTRIBUTING.md** — branch, commit and pull-request conventions.
+- **docs/decisions/** — durable architecture and engineering decisions.
+- **.agents/skills/** — reusable task workflows; they do not assign work to a particular model or agent.
+- **scripts/** and **.github/workflows/** — executable governance checks and CI.
 
-1. Fill in the architecture reference and select the real stack.
-2. Configure `project-policy.json` with actual quality commands, as token arrays.
-3. Run `python scripts/verify_project.py` and `python scripts/run_quality.py`.
-4. Add the correct runtime setup to `.github/workflows/quality.yml` for your stack (Node/Java/dbt/etc.), and use `.agents/skills/` for detailed workflows.
+## Initialize a repository created from this template
 
-**Important:** this template is not an automatic DSH workflow engine. The agent must really call workers, CI and review tools; merging and publishing remain separate authorized operations.
+GitHub Template repositories copy files; they do not substitute placeholders automatically.
 
-## V2: initialize your repository
+1. Configure the project identity and detect the stack:
+   ~~~sh
+   python scripts/configure_project.py --name my-project --stack auto
+   ~~~
+2. Review the preview. Apply only when correct:
+   ~~~sh
+   python scripts/configure_project.py --name my-project --stack python --apply
+   ~~~
+3. Complete docs/architecture.md with the actual system boundaries and module ownership.
+4. Configure real quality checks in project-policy.json. Use token arrays, not shell command strings.
+5. Configure the CI runtime, dependency installation, credentials and service fixtures required by the actual project.
+6. Run the template checks:
+   ~~~sh
+   python scripts/verify_project.py
+   python -m unittest discover -s tests -p 'test_template_*.py' -v
+   python scripts/run_quality.py
+   ~~~
 
-The template carries a versioned quality policy and safe cross-Agent roles.
-After creating a repository, configure its name and stack:
+Supported project classifications: generic, python, node, java, data and mixed. The classification is descriptive; use the technology-specific standards that match the code actually present.
 
-```bash
-python scripts/configure_project.py --name my-project --stack auto
-python scripts/configure_project.py --name my-project --stack python --apply
-python scripts/verify_project.py
-python scripts/run_quality.py
-```
+## Quality policy
 
-The first command previews only; `--apply` updates placeholder project metadata.
-Supported stacks: `generic`, `python`, `node`, `java`, `data`, `mixed`.
-For Python, data and mixed projects, test commands cannot be assumed from the
-technology alone. Add real `quality_checks` to `project-policy.json`, e.g.:
+The project policy keeps the V2 schema and typed quality-check format. Once application source exists, at least one real test check is required. The runner executes argv arrays without a shell and rejects obvious no-op commands; it cannot prove that a test suite is meaningful. Review the test design and CI environment as well as the exit code.
 
-```json
-{"category": "test", "argv": ["python", "-m", "pytest", "-q"]}
-```
+A project may add lint, typecheck, build, SQL validation and other checks that its actual toolchain supports. Do not declare a check merely to make the policy green.
 
-For recognized Node `package.json` test scripts and Java Maven projects,
-configuration can suggest the corresponding test command. Validate it against
-actual project dependencies before claiming a test passed. CI provides runtimes
-for common stacks, but projects may need additional dependency setup.
+## Template updates
 
-Run `python -m unittest discover -s tests -p 'test_template_*.py' -v` to verify
-the template itself. See [template upgrades](docs/template-upgrades.md) for
-versioned, reviewable updates. A declared test command is not a proof of good
-coverage; code review and real integration evidence remain necessary.
+The template is a versioned starting point, not a remote synchronization mechanism. Existing projects keep their local decisions and customizations. Upgrade through a dedicated reviewed PR, compare the old and new versions, and preserve local changes. See docs/template-upgrades.md.
+
+Production deployment, release, publishing, database migration and production DataWorks node submission or publication remain separately authorized operations. A passing CI run does not authorize them.
