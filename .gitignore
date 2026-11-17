@@ -1,0 +1,18 @@
+# Local credentials and transient tooling
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+node_modules/
+dist/
+build/
+target/
+coverage/
+.idea/
+.vscode/

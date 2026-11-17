@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "project_name": "PROJECT_NAME",
+  "project_type": "PROJECT_TYPE",
+  "require_checks_when_code_exists": true,
+  "quality_commands": [],
+  "release_mode": "manual"
+}
