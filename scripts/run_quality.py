@@ -1,53 +1,88 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-"""Fail closed for real source without configured checks; run checks as argv, not shell."""
-from pathlib import Path
+"""Execute declared quality gates; never infer success from an empty test list."""
 import json
+import os
+from pathlib import Path
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-policy = json.loads((ROOT / 'project-policy.json').read_text(encoding='utf-8'))
-commands = policy.get('quality_commands', [])
-source_exts = {
-    '.py', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.sql', '.java',
-    '.scala', '.kt', '.go', '.rs', '.sh', '.rb', '.php', '.cs', '.cpp', '.c',
-}
-# Ignore generated dependencies and the template's own tooling. Traverse all
-# other directories, including cmd/, internal/, backend/ and custom sources.
-ignored_dirs = {
-    '.git', '.github', '.agents', 'node_modules', '.venv', 'venv',
-    'dist', 'build', 'target', '__pycache__', '.pytest_cache', '.mypy_cache',
-    '.next', '.nuxt', 'coverage', '.tox', 'vendor', 'docs',
-}
-scaffold_tools = {'scripts/run_quality.py', 'scripts/verify_project.py'}
+SOURCE_EXTENSIONS = {'.py', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.sql',
+                     '.java', '.scala', '.kt', '.go', '.rs', '.sh', '.rb', '.php',
+                     '.cs', '.cpp', '.c', '.h', '.hpp'}
+SKIP_DIRECTORIES = {'.git', '.github', '.agents', '.venv', 'venv', 'node_modules',
+                    'dist', 'build', 'target', 'coverage', '__pycache__',
+                    '.pytest_cache', '.mypy_cache', '.next', '.nuxt', 'vendor', 'docs'}
+TEMPLATE_TOOLS = {'scripts/run_quality.py', 'scripts/verify_project.py',
+                  'scripts/configure_project.py', 'tests/test_template_contract.py'}
+ALLOWED_CATEGORIES = {'test', 'lint', 'typecheck', 'build', 'sql'}
+PLACEHOLDERS = {'PROJECT_NAME', 'PROJECT_TYPE'}
 
-def has_production_code():
-    for file in ROOT.rglob('*'):
-        if not file.is_file() or file.suffix.lower() not in source_exts:
-            continue
-        relative = file.relative_to(ROOT)
-        if ignored_dirs.intersection(relative.parts):
-            continue
-        if relative.as_posix() in scaffold_tools:
-            continue
-        return True
+
+def has_application_code(root=ROOT):
+    for current, dirs, names in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRECTORIES]
+        for name in names:
+            file = Path(current) / name
+            if file.suffix.lower() not in SOURCE_EXTENSIONS:
+                continue
+            if file.relative_to(root).as_posix() not in TEMPLATE_TOOLS:
+                return True
     return False
 
-production_code = has_production_code()
-if not commands:
-    if production_code and policy.get('require_checks_when_code_exists', True):
-        sys.exit('ERROR: production source detected but quality_commands is empty; configure real checks in project-policy.json')
-    print('No production source yet; quality checks not configured. Governance-only stage.')
-    sys.exit(0)
-for index, command in enumerate(commands, 1):
-    if not isinstance(command, list) or not command or not all(isinstance(part, str) and part for part in command):
-        sys.exit(f'ERROR: quality_commands[{index - 1}] must be a nonempty array of command tokens')
-    print(f'Check {index}/{len(commands)}: {command[0]}', flush=True)
+
+def validate_policy(policy, has_code):
+    if policy.get('schema_version') != 2:
+        raise ValueError('schema_version must be 2')
+    if policy.get('release_mode') != 'manual' or policy.get('require_checks_when_code_exists') is not True:
+        raise ValueError('release_mode must be manual and source checks mandatory')
+    commands = policy.get('quality_checks')
+    if not isinstance(commands, list):
+        raise ValueError('quality_checks must be an array')
+    kinds = set()
+    for i, entry in enumerate(commands):
+        if not isinstance(entry, dict) or set(entry) != {'category', 'argv'}:
+            raise ValueError(f'quality_checks[{i}] must contain category and argv only')
+        kind, argv = entry['category'], entry['argv']
+        if kind not in ALLOWED_CATEGORIES:
+            raise ValueError(f'quality_checks[{i}] has unsupported category')
+        if not isinstance(argv, list) or not argv or not all(isinstance(a, str) and a for a in argv):
+            raise ValueError(f'quality_checks[{i}] argv must contain nonempty tokens')
+        # Obvious no-op checks must not count as test evidence. This is not a
+        # semantic proof that an arbitrary test command is meaningful.
+        if argv[0] in {'true', 'echo', 'printf', ':'} or '-c' in argv:
+            raise ValueError(f'quality_checks[{i}] looks like a placeholder/no-op')
+        kinds.add(kind)
+    if has_code:
+        if policy.get('project_name') in PLACEHOLDERS or policy.get('project_type') in PLACEHOLDERS:
+            raise ValueError('configure project name and type before shipping source')
+        if 'test' not in kinds:
+            raise ValueError('application source requires at least one test check')
+    return commands
+
+
+def main():
+    policy = json.loads((ROOT / 'project-policy.json').read_text(encoding='utf-8'))
+    commands = validate_policy(policy, has_application_code())
+    if not commands:
+        print('No application source yet: governance-only template stage; no tests claimed.')
+        return 0
+    for i, check in enumerate(commands, 1):
+        argv = check['argv']
+        print(f"Running {i}/{len(commands)} [{check['category']}]: {argv[0]}", flush=True)
+        try:
+            result = subprocess.run(argv, cwd=ROOT, check=False, timeout=600)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            sys.exit(f'ERROR: check {i} could not complete: {exc}')
+        if result.returncode:
+            sys.exit(f'ERROR: check {i} returned {result.returncode}')
+    print(f'{len(commands)} configured checks passed; meaning of checks still requires review.')
+    return 0
+
+
+if __name__ == '__main__':
     try:
-        result = subprocess.run(command, cwd=ROOT, check=False)
-    except OSError as exc:
-        sys.exit(f'ERROR: check unavailable: {exc}')
-    if result.returncode != 0:
-        sys.exit(f'ERROR: check {index} failed with exit code {result.returncode}')
-print(f'All {len(commands)} configured quality checks passed.')
+        sys.exit(main())
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        sys.exit(f'ERROR: {error}')

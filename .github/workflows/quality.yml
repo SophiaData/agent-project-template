@@ -8,13 +8,36 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify Agent guidance
+      - uses: actions/setup-node@v4
+        if: hashFiles('package.json') != ''
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        if: hashFiles('pom.xml', 'build.gradle', 'build.gradle.kts') != ''
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Enable pnpm when project uses it
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: corepack enable
+      - name: Install Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+      - name: Install Node dependencies (npm)
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+      - name: Install Python dev dependencies when declared
+        if: hashFiles('requirements-dev.txt') != ''
+        run: python -m pip install -r requirements-dev.txt
+      - name: Test reusable template contract
+        run: python -m unittest discover -s tests -p 'test_template_*.py' -v
+      - name: Verify project governance
         run: python scripts/verify_project.py
-      - name: Run configured project checks
+      - name: Run declared project quality checks
         run: python scripts/run_quality.py

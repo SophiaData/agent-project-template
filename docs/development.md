@@ -9,3 +9,12 @@
 Do not automatically publish, release, deploy or alter production services. An AI `PASS` is not an authorized merge.
 
 For a new stack, configure real test/typecheck/lint commands in `project-policy.json` before shipping source.
+
+## Project initialization and template upgrades
+
+The template is versioned in `TEMPLATE_VERSION`. Run
+`python scripts/configure_project.py --name <project> --stack auto` for a
+read-only proposal, then `--apply` once the proposed metadata is correct.
+Document stack-specific quality commands and dependency setup before editing
+business code. Existing projects upgrade via a reviewed diff, not blind overwrite;
+see [template-upgrades.md](template-upgrades.md).
