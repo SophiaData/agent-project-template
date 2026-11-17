@@ -1,8 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "template_version": "2.0.0",
   "project_name": "PROJECT_NAME",
   "project_type": "PROJECT_TYPE",
   "require_checks_when_code_exists": true,
-  "quality_commands": [],
+  "quality_checks": [],
   "release_mode": "manual"
 }

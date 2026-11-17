@@ -15,3 +15,12 @@ Applies to GPT, Claude Code, Codex, DSH and other coding assistants working on t
 - Use `.agents/skills/` instructions for planning, implementation, review and PR preparation.
 
 This is a **new-project baseline**. Add technology-specific rules after identifying the project stack.
+
+## V2 policy
+
+Before shipping application code, run `python scripts/configure_project.py`
+with the real project name/stack, configure non-placeholder tests in the
+`quality_checks` array, and run the template contract tests. Template version
+is tracked in `TEMPLATE_VERSION`; updates require a reviewed PR following
+[upgrade guidance](docs/template-upgrades.md). The declared command categories
+are an audit signal, not evidence that an arbitrary test command is meaningful.
