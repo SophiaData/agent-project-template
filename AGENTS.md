@@ -31,7 +31,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 
 ## Quality commands
 
-Run python scripts/verify_project.py and the template contract tests for changes to this template. Run python scripts/run_quality.py for configured project checks. Select additional checks based on the changed behavior; do not default to an unrelated full suite or claim unexecuted checks passed.
+Run python scripts/verify_project.py and the template contract tests for changes to this template. Run python scripts/run_quality.py --base <verified-base-ref> to select path-scoped checks from committed changes; omit --base to run every configured check. Fetch the base first and never treat an unresolved diff as an empty change set. Select additional checks based on the changed behavior; do not default to an unrelated full suite or claim unexecuted checks passed.
 
 ## Reusable workflows
 
