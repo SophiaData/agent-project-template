@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -40,4 +42,11 @@ jobs:
       - name: Verify project governance
         run: python scripts/verify_project.py
       - name: Run declared project quality checks
-        run: python scripts/run_quality.py
+        env:
+          QUALITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$QUALITY_BASE_SHA" ] && [ "$QUALITY_BASE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python scripts/run_quality.py --base "$QUALITY_BASE_SHA"
+          else
+            python scripts/run_quality.py
+          fi
