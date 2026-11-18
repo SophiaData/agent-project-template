@@ -18,4 +18,4 @@ Use typed or structured errors when consumers need to distinguish failures. Pres
 
 ## Testing and tooling
 
-Use the repository's configured formatter, linter, compiler and test runner. Test source and built/package entry points where they differ. Do not assume a particular bundler, test framework or package manager.
+Use the repository's configured formatter, linter, compiler and test runner. Test source and built/package entry points where they differ. Where package or layer direction matters, consider dependency-cruiser or an ESLint boundary rule and register it as an architecture quality check with a forbidden-import fixture. Do not assume a particular bundler, test framework, package manager or architecture tool.
