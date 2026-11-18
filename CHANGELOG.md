@@ -1,5 +1,14 @@
 # Template changelog
 
+## 2.4.0 — 2026-11-18
+
+- Add an architecture quality-check category for stack-native module dependency and layer-boundary guards.
+- Add a defensive pattern requiring permitted dependency direction, acyclic module graphs by default and public interfaces across package boundaries.
+- Extend architecture documentation with allowed/forbidden dependency rules, ownership and enforcement guidance.
+- Add optional examples for Python, TypeScript, Java and data-engineering projects without imposing a parser or tool dependency.
+- Require forbidden-dependency negative controls for new or changed architecture guards; architecture checks do not replace the required test category.
+- Preserve project-policy.json schema 2 and all existing quality-check categories.
+
 ## 2.3.0 — 2026-11-18
 
 - Add optional relative path-glob selectors to V2 quality-check entries without changing the policy schema.
