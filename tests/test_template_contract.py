@@ -34,7 +34,7 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.3.0')
+        self.assertEqual(version, '2.4.0')
 
     def test_technology_profiles_are_present(self):
         profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
@@ -60,6 +60,38 @@ class ProjectTemplateContract(unittest.TestCase):
         template = (ROOT / '.github/pull_request_template.md').read_text(encoding='utf-8')
         self.assertIn('## Test design', template)
         self.assertIn('## AI assistance (when applicable)', template)
+
+    def test_architecture_check_category_is_supported(self):
+        checks = [
+            {'category': 'test', 'argv': ['python', '-m', 'pytest']},
+            {'category': 'architecture', 'argv': ['python', 'scripts/check_architecture.py'],
+             'paths': ['src/**', 'pyproject.toml']},
+        ]
+        self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
+
+    def test_architecture_check_does_not_replace_required_tests(self):
+        checks = [{'category': 'architecture', 'argv': ['python', 'scripts/check_architecture.py']}]
+        self.assertRaisesRegex(ValueError, 'test check', quality.validate_policy,
+                               self.policy(checks), True)
+
+    def test_runner_executes_selected_architecture_check(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            policy = self.policy([
+                {'category': 'test', 'argv': ['python', '-m', 'pytest']},
+                {'category': 'architecture', 'argv': ['python', 'scripts/check_architecture.py'],
+                 'paths': ['src/**']},
+            ])
+            (root / 'project-policy.json').write_text(json.dumps(policy), encoding='utf-8')
+            with patch.object(quality, 'ROOT', root), \
+                    patch.object(quality, 'has_application_code', return_value=True), \
+                    patch.object(quality, 'get_changed_paths', return_value=['src/api.py']), \
+                    patch.object(quality.subprocess, 'run') as run:
+                run.return_value.returncode = 0
+                self.assertEqual(quality.main(['--base', 'origin/main']), 0)
+            self.assertEqual(run.call_count, 2)
+            self.assertEqual(run.call_args_list[1].args[0],
+                             ['python', 'scripts/check_architecture.py'])
 
     def test_quality_policy_accepts_optional_path_selectors(self):
         checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest'],
@@ -261,7 +293,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.3.0', require_checks_when_code_exists=True,
+                    template_version='2.4.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 
