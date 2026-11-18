@@ -18,7 +18,7 @@ This repository is a reusable, stack-neutral engineering standards baseline. It 
 - **docs/compatibility.md** — API, schema, persistence and upgrade policy.
 - **docs/git-workflow.md** and **CONTRIBUTING.md** — branch, commit and pull-request conventions.
 - **docs/decisions/** — durable architecture and engineering decisions.
-- **docs/agent-governance.md** — instruction hierarchy, compatibility-entry-point rules and Skill ownership.
+- **docs/agent-governance.md** and **docs/instruction-chain-governance.md** — instruction hierarchy, host-aware scope inspection, compatibility-entry-point rules and Skill ownership.
 - **.agents/skills/README.md** and **.agents/skills/** — the canonical Skill registry and reusable task workflows; Skills do not assign work to a particular model or agent.
 - **scripts/** and **.github/workflows/** — executable governance checks and CI.
 
@@ -39,6 +39,7 @@ GitHub Template repositories copy files; they do not substitute placeholders aut
 5. Configure the CI runtime, dependency installation, credentials and service fixtures required by the actual project.
 6. Run the template checks:
    ~~~sh
+   python scripts/instruction_chain.py --target docs/testing.md --profile dsh
    python scripts/verify_project.py
    python -m unittest discover -s tests -p 'test_template_*.py' -v
    python scripts/run_quality.py

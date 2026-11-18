@@ -16,3 +16,7 @@ target/
 coverage/
 .idea/
 .vscode/
+
+# Per-developer instruction overlays must not become shared policy
+**/AGENTS.local.md
+**/CLAUDE.local.md

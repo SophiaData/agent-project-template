@@ -7,6 +7,11 @@ import re
 import sys
 from urllib.parse import unquote
 
+try:
+    from scripts.instruction_chain import audit_sources
+except ModuleNotFoundError:  # direct execution: python scripts/verify_project.py
+    from instruction_chain import audit_sources
+
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = '.agents/skills'
 SKILL_REGISTRY = '.agents/skills/README.md'
@@ -83,6 +88,7 @@ def verify_agent_instructions(root, errors):
             errors.append('CLAUDE.md assigns fixed roles to a model or agent')
         if len(body.splitlines()) > 40:
             errors.append('CLAUDE.md compatibility entry point is too large; keep engineering rules in AGENTS.md')
+    errors.extend(audit_sources(root))
     return errors
 
 

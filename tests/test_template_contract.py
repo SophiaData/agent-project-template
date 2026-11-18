@@ -34,7 +34,7 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.5.0')
+        self.assertEqual(version, '2.6.0')
 
     def test_agent_governance_contract_is_valid(self):
         errors = []
@@ -348,6 +348,11 @@ class ProjectTemplateContract(unittest.TestCase):
             checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest']}]
             self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
 
+    def test_instruction_chain_tool_is_template_owned_not_application_source(self):
+        self.assertIn('scripts/instruction_chain.py', quality.TEMPLATE_TOOLS)
+        self.assertIn('tests/test_template_instruction_chain.py', quality.TEMPLATE_TOOLS)
+        self.assertFalse(quality.has_application_code(ROOT))
+
     def test_source_detection_handles_nonstandard_dirs(self):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
@@ -429,7 +434,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.5.0', require_checks_when_code_exists=True,
+                    template_version='2.6.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 

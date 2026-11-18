@@ -1,5 +1,13 @@
 # Template changelog
 
+## 2.6.0 — 2026-11-18
+
+- Add a deterministic project instruction-chain inspector with shared, DSH, Codex and Claude Code file-selection profiles.
+- Show root-to-target scopes, local overlays, per-directory duplicates and host-specific overrides without pretending to inject prompts into Agent runtimes.
+- Add repository instruction-source audit checks and negative-control tests for path traversal, symlinks and unreadable files.
+- Ignore local instruction overlays in Git; document explicit runtime-validation limits and migration guidance.
+- Preserve project-policy.json schema 2, model neutrality and manual delivery boundaries.
+
 ## 2.5.0 — 2026-11-18
 
 - Add executable instruction-governance checks for root AGENTS.md, CLAUDE.md compatibility entry points and project Skill ownership.

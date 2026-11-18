@@ -38,6 +38,12 @@ Projects may add a relative slash-separated paths array to a quality check to se
 
 CI now fetches full Git history and supplies the pull-request base or push-before commit. Local contributors should fetch the verified base and run `scripts/run_quality.py --base <base-ref>` for committed changes; omit `--base` to run all configured checks, including checks needed while validating uncommitted work. Review each project's path selectors rather than copying the example patterns blindly.
 
+### V2.5 to V2.6
+
+This is an additive instruction-chain governance upgrade with no `project-policy.json` schema migration. The new `scripts/instruction_chain.py` command inspects file-scoped shared, DSH, Codex and Claude Code project instructions as a deterministic preflight. It does not inject into any host runtime or imply that an Agent followed the rules. The verifier also inspects nested instruction-source file safety, while local overlays are now ignored by Git.
+
+Existing repositories should adopt the new script, tests and documentation through a reviewed PR, inspect any tracked local overlay files and run the inspector on their actual nested paths. Validate DSH, Codex or Claude Code behavior in the host separately. See [instruction-chain governance](instruction-chain-governance.md).
+
 ### V2.4 to V2.5
 
 This upgrade adds executable governance for instruction files and project Skills. The project-policy.json schema remains version 2. The verifier discovers every direct child under .agents/skills, requires `<name>/SKILL.md`, validates frontmatter name and description, and checks the canonical .agents/skills/README.md registry. Root AGENTS.md is checked for the standing-order sections and concise size; CLAUDE.md is treated as a compatibility entry point that must point to the shared AGENTS.md policy. Fixed model-role assignments are rejected. Existing projects should add the registry and update their local verifier expectations through a reviewed diff.
