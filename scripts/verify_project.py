@@ -119,7 +119,7 @@ def verify_skills(root, errors):
             errors.append(f'Skill name does not match directory: {rel}')
         if not description:
             errors.append(f'Skill description is empty: {rel}')
-        if not content.strip() or not re.search(r'(?m)^# .+\S.*\Z', content):
+        if not content.strip() or not re.search(r'(?m)^# .+\S.*(?=\r?\n|\Z)', content):
             errors.append(f'Skill body must contain a non-empty level-1 heading: {rel}')
         if ROLE_ASSIGNMENT_RE.search(body):
             errors.append(f'Skill assigns fixed roles to a model or agent: {rel}')
@@ -127,7 +127,7 @@ def verify_skills(root, errors):
 
     registry_body = registry.read_text(encoding='utf-8')
     registry_pattern = re.compile(
-        r'(?m)^\s*-\s+\[([a-z][a-z0-9-]*)\]\(([^)]+)\)\s+—\s+(.+?)\s*\Z'
+        r'(?m)^\s*-\s+\[([a-z][a-z0-9-]*)\]\(([^)]+)\)\s+—\s+(.+?)\s*(?=\r?\n|\Z)'
     )
     registered = {}
     for name, target, description in registry_pattern.findall(registry_body):
