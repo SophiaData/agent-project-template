@@ -78,13 +78,23 @@ LEFT JOIN product_info d
 
 ### Correct example
 ~~~sql
-SELECT product_id, COUNT(*) AS row_count
-FROM product_info
-GROUP BY product_id
-HAVING COUNT(*) > 1;
+WITH ranked_product_info AS (
+    SELECT product_id
+         , category
+         , ROW_NUMBER() OVER (
+               PARTITION BY product_id
+               ORDER BY effective_at DESC, record_id DESC
+           ) AS row_num
+    FROM product_info
+)
+SELECT f.product_id, f.spend, d.category
+FROM fact_spend f
+LEFT JOIN ranked_product_info d
+  ON f.product_id = d.product_id
+ AND d.row_num = 1;
 ~~~
 
-Resolve the reported duplicates with an explicit effective-date, priority or other domain tie-break before using the dimension as many-to-one.
+The ordering columns must implement the business-approved effective-date or priority rule and end with a stable unique tie-breaker. Run a duplicate-key diagnostic separately so the deduplication does not hide unexpected source changes.
 
 ### Enforcement
 SQL tests or pre-aggregation checks plus review of the documented cardinality.
