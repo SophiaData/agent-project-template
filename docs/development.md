@@ -8,7 +8,7 @@ Inspect the repository, architecture, affected modules, callers, tests and deplo
 
 ## 2. Design the smallest complete change
 
-Prefer existing interfaces and extension points. Trace producers and consumers before adding fields, states, configuration, dependencies or abstractions. Explain why each new public choice is needed and what owns it.
+Prefer existing interfaces and extension points. Trace producers and consumers before adding fields, states, configuration, dependencies or abstractions. Explain why each new public choice is needed and what owns it. Read the applicable [defensive patterns](defensive-patterns/README.md) before implementing a change that matches one of their triggers.
 
 ## 3. Implement
 
@@ -18,11 +18,13 @@ Work on a focused branch or worktree. Keep changes local to the owning module. A
 
 Choose checks based on the changed behavior and its real execution path. Run focused tests first, then the relevant type, lint, build, integration or compatibility checks. Run python scripts/verify_project.py and the configured checks where applicable. Record exact commands, exit status, environment and limitations.
 
+For a new or changed automated guard, add a negative-control test that introduces the intended violation and proves the guard rejects it. A successful run of only valid fixtures is not sufficient evidence for a guard.
+
 A check that was skipped, blocked by missing infrastructure or not run must be reported as NOT RUN or BLOCKED. Static checks do not prove runtime integration. Do not repeat an already passing expensive check solely because a commit or push occurred unless its inputs changed.
 
 ## 5. Review
 
-Inspect the actual diff against the base branch and acceptance criteria. Review surrounding code, error paths, security, data integrity, compatibility, concurrency, tests and documentation. Independent review is required for material changes; a model's self-reported PASS is not sufficient evidence.
+Inspect the actual diff against the base branch and acceptance criteria. Review surrounding code, error paths, security, data integrity, compatibility, concurrency, tests and documentation. Apply relevant defensive patterns. Independent review is required for material changes; a model's self-reported PASS is not sufficient evidence.
 
 ## 6. Deliver
 

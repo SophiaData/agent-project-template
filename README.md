@@ -9,9 +9,10 @@ This repository is a reusable, stack-neutral engineering standards baseline. It 
 - **AGENTS.md** — concise repository-wide engineering rules for every contributor and coding assistant.
 - **docs/architecture.md** — system boundaries, module ownership, dependencies and runtime topology.
 - **docs/coding-standards.md** — language-neutral coding and design principles.
+- **docs/defensive-patterns/** — defect-class requirements for state ownership, asynchronous lifecycles, resources, retries, performance and data engineering.
 - **docs/standards/** — technology-specific standards for Python, TypeScript, Java and data engineering.
 - **docs/development.md** — plan, implement, verify, review and deliver workflow.
-- **docs/testing.md** — test levels, reliability and evidence requirements.
+- **docs/testing.md** — test levels, reliability, negative controls and evidence requirements.
 - **docs/error-handling.md** — failure ownership, cancellation, retries and reporting.
 - **docs/documentation.md** and **docs/AGENTS.md** — documentation placement, scope and maintenance.
 - **docs/compatibility.md** — API, schema, persistence and upgrade policy.
@@ -46,7 +47,7 @@ Supported project classifications: generic, python, node, java, data and mixed. 
 
 ## Quality policy
 
-The project policy keeps the V2 schema and typed quality-check format. Once application source exists, at least one real test check is required. The runner executes argv arrays without a shell and rejects obvious no-op commands; it cannot prove that a test suite is meaningful. Review the test design and CI environment as well as the exit code.
+The project policy keeps the V2 schema and typed quality-check format. Once application source exists, at least one real test check is required. The runner executes argv arrays without a shell and rejects obvious no-op commands; it cannot prove that a test suite is meaningful or non-empty. Configure framework-specific fail-on-empty behavior or a project-owned test-discovery check. Review the test design and CI environment as well as the exit code.
 
 A project may add lint, typecheck, build, SQL validation and other checks that its actual toolchain supports. Do not declare a check merely to make the policy green.
 

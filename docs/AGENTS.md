@@ -7,5 +7,6 @@ These instructions apply to every file under docs/. Read docs/documentation.md f
 - Architecture documents describe system context, boundaries, ownership and data flow. Module references describe their own contracts. Decision records explain durable rationale. Upgrade guides describe exact user migration steps.
 - Keep tutorials sequential and references organized for lookup. Do not mix a long tutorial and exhaustive reference into one undifferentiated page.
 - Preserve ownership, failure behavior, timing, units, defaults, security and compatibility details when editing prose or examples.
-- Update the owning document in the same change as the code, API, configuration or data contract it describes.
+- Defensive patterns must describe a concrete trigger, required invariant, failure prevented, observable evidence, boundary/exception and contrasting incorrect/correct examples. Keep applicability narrow; do not turn a local defect into a universal rule.
 - Verify relative links, commands, code examples and generated references. Never claim an example or check was executed unless it was.
+- Update the owning document in the same change as the code, API, configuration or data contract it describes.

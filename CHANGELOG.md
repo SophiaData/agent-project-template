@@ -1,5 +1,14 @@
 # Template changelog
 
+## 2.2.0 — 2026-11-18
+
+- Add a defensive-pattern catalog for shared state, asynchronous correctness, resource allocation, quiescent cleanup, retries, outcome reporting, trust boundaries and performance evidence.
+- Add data-engineering patterns for grain, join cardinality, time semantics, idempotent processing, delivery guarantees and schema evolution.
+- Require negative-control tests for new automated guards and add structural validation for defensive-pattern documents.
+- Update implementation, review and pre-PR workflows to identify applicable patterns without applying unrelated rules mechanically.
+- Clarify that the generic quality runner cannot prove a configured test command discovered or executed meaningful tests; require framework-specific fail-on-empty behavior or a project-owned discovery check.
+- Keep project-policy.json schema 2 and existing argv-based quality checks compatible.
+
 ## 2.1.0 — 2026-11-17
 
 - Reframe the template as a stack-neutral engineering standards baseline.

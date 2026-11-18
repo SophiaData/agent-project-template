@@ -5,6 +5,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 ## Before changing code
 
 - Read docs/architecture.md, docs/coding-standards.md, docs/development.md and docs/testing.md. Read the relevant technology profile under docs/standards/.
+- Read the applicable rules in docs/defensive-patterns/ before changing shared state, asynchronous lifecycles, resource ownership, retries, SQL/data grain, streaming guarantees or schema contracts.
 - Trace the existing implementation, callers, tests, configuration and deployment path before proposing a change.
 - State scope, non-goals, acceptance criteria and compatibility or data risks for substantive work.
 
@@ -17,7 +18,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 - Treat asynchronous work, concurrency, cancellation, resource cleanup and shutdown as correctness requirements.
 - Handle failures explicitly. Do not silently swallow errors or retry operations without proving safe repetition.
 - Protect credentials and sensitive data. Never commit secrets or expose them in logs, fixtures, screenshots or PRs.
-- Add or update regression tests for behavior changes. Tests must assert observable behavior, not merely repeat implementation details.
+- Add or update regression tests for behavior changes. Tests must assert observable behavior, not merely repeat implementation details. For agent or automation work, verify resulting files, persisted state or external effects independently; never rely on the agent's self-report alone.
 - Update the owning documentation and compatibility notes in the same change. Read docs/AGENTS.md when editing documentation. Record durable design decisions in docs/decisions/.
 - Report only checks actually run. Distinguish PASS, FAIL, NOT RUN and BLOCKED; include environment and relevant evidence.
 
