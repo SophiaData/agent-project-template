@@ -8,6 +8,20 @@ import sys
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFENSIVE_PATTERN_FILES = (
+    'docs/defensive-patterns/general.md',
+    'docs/defensive-patterns/data-engineering.md',
+)
+PATTERN_SUBSECTIONS = (
+    'Applies when',
+    'Required invariant',
+    'Failure prevented',
+    'Evidence',
+    'Boundary and exception',
+    'Incorrect example',
+    'Correct example',
+    'Enforcement',
+)
 REQUIRED = [
     'AGENTS.md', 'CLAUDE.md', 'CONTRIBUTING.md', 'README.md', 'TEMPLATE_VERSION',
     'docs/AGENTS.md', 'docs/architecture.md', 'docs/development.md',
@@ -17,6 +31,8 @@ REQUIRED = [
     'docs/decisions/template.md', 'docs/standards/README.md',
     'docs/standards/python.md', 'docs/standards/typescript.md',
     'docs/standards/java.md', 'docs/standards/data-engineering.md',
+    'docs/defensive-patterns/README.md',
+    *DEFENSIVE_PATTERN_FILES,
     '.github/pull_request_template.md', '.github/workflows/quality.yml',
     'project-policy.json',
     '.agents/skills/project-plan/SKILL.md',
@@ -30,6 +46,29 @@ REQUIRED = [
 ]
 
 
+def verify_defensive_patterns(root, errors):
+    """Require each defensive-pattern rule to carry the reviewable contract sections."""
+    for rel in DEFENSIVE_PATTERN_FILES:
+        file = root / rel
+        if not file.is_file():
+            continue  # The required-file check reports the missing document.
+        body = file.read_text(encoding='utf-8')
+        headings = list(re.finditer(r'(?m)^## (.+?)\\s*$', body))
+        if not headings:
+            errors.append(f'Defensive patterns contain no rules: {rel}')
+            continue
+        for index, heading in enumerate(headings):
+            end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
+            section = body[heading.end():end]
+            for required in PATTERN_SUBSECTIONS:
+                pattern = rf'(?m)^### {re.escape(required)}\\s*$'
+                if not re.search(pattern, section):
+                    errors.append(
+                        f'Defensive pattern missing subsection "{required}": {rel} / {heading.group(1)}'
+                    )
+    return errors
+
+
 def verify(root=ROOT):
     errors = []
     root = root.resolve()
@@ -41,18 +80,19 @@ def verify(root=ROOT):
         body = file.read_text(encoding='utf-8')
         if rel.endswith('/SKILL.md'):
             match = re.match(
-                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
+                r'\\A---\\r?\\nname: ([a-z][a-z0-9-]*)\\r?\\ndescription: ([^\\r\\n]+)\\r?\\n---\\r?\\n',
                 body,
             )
             if not match or match.group(1) != file.parent.name:
                 errors.append(f'Bad skill metadata: {rel}')
-        for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
+        for href in re.findall(r'!?\\[[^]]*\\]\\(([^)]+)\\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
                 continue
             location = (file.parent / unquote(link)).resolve()
             if not location.is_relative_to(root) or not location.exists():
                 errors.append(f'Broken/unsafe link: {rel} => {href}')
+    verify_defensive_patterns(root, errors)
     try:
         policy = json.loads((root / 'project-policy.json').read_text(encoding='utf-8'))
         version = (root / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()

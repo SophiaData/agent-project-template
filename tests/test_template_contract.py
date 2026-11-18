@@ -33,12 +33,17 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.1.0')
+        self.assertEqual(version, '2.2.0')
 
     def test_technology_profiles_are_present(self):
         profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
         for profile in profiles:
             self.assertTrue((ROOT / 'docs/standards' / profile).is_file(), profile)
+
+    def test_defensive_pattern_documents_are_present(self):
+        docs = ('README.md', 'general.md', 'data-engineering.md')
+        for name in docs:
+            self.assertTrue((ROOT / 'docs/defensive-patterns' / name).is_file(), name)
 
     def test_empty_directory_has_no_application_code(self):
         with tempfile.TemporaryDirectory() as path:
@@ -48,7 +53,7 @@ class ProjectTemplateContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             (root / 'backend').mkdir()
-            (root / 'backend' / 'server.py').write_text('print("hello")\n')
+            (root / 'backend' / 'server.py').write_text('print("hello")\\n')
             self.assertTrue(quality.has_application_code(root))
             checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest']}]
             self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
@@ -57,7 +62,7 @@ class ProjectTemplateContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             (root / 'backend/service').mkdir(parents=True)
-            (root / 'backend/service/api.go').write_text('package api\n')
+            (root / 'backend/service/api.go').write_text('package api\\n')
             self.assertTrue(quality.has_application_code(root))
 
     def test_empty_test_list_rejected_once_source_exists(self):
@@ -91,6 +96,41 @@ class ProjectTemplateContract(unittest.TestCase):
             self.assertEqual(configure.candidate_checks(root, 'node'),
                              [{'category': 'test', 'argv': ['npm', 'test']}])
 
+    def test_verifier_negative_control_rejects_missing_required_document(self):
+        with tempfile.TemporaryDirectory() as path:
+            errors = verify.verify(Path(path))
+            self.assertIn('Missing: docs/defensive-patterns/general.md', errors)
+
+    def test_verifier_negative_control_rejects_incomplete_pattern(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            doc = root / 'docs/defensive-patterns/general.md'
+            doc.parent.mkdir(parents=True)
+            doc.write_text(
+                '## Deliberately incomplete rule\\n\\n'
+                '### Applies when\\nA test fixture activates this rule.\\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_defensive_patterns(root, errors)
+            self.assertTrue(
+                any('missing subsection "Required invariant"' in error for error in errors),
+                errors,
+            )
+
+    def test_verifier_negative_control_rejects_broken_markdown_link(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            doc = root / 'docs/defensive-patterns/README.md'
+            doc.parent.mkdir(parents=True)
+            doc.write_text('[deliberately broken](missing-target.md)\\n', encoding='utf-8')
+            errors = verify.verify(root)
+            self.assertTrue(
+                any(error.startswith('Broken/unsafe link: docs/defensive-patterns/README.md')
+                    for error in errors),
+                errors,
+            )
+
     def test_template_governance_script_executes(self):
         argv = [sys.executable, 'scripts/verify_project.py']
         proc = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True)
@@ -99,7 +139,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.1.0', require_checks_when_code_exists=True,
+                    template_version='2.2.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 
