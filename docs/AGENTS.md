@@ -1,8 +1,6 @@
 # Documentation instructions
 
-These instructions supplement the repository-wide [AGENTS.md](../AGENTS.md) and apply to every file under docs/.
-
-These instructions apply to every file under docs/. Read docs/documentation.md for the full documentation standard and use the document's owning tier for each fact.
+These instructions supplement the repository-wide [AGENTS.md](../AGENTS.md) and apply to every file under docs/. Read docs/documentation.md for the full documentation standard and use the document's owning tier for each fact.
 
 - Keep documentation aligned with current shipped behavior. Put historical rationale in decision records or postmortems, not in current-state references.
 - Give each fact one authoritative home. Link to the owner instead of copying API details, package inventories, command lists or lower-level procedures.
