@@ -10,9 +10,9 @@ Running every configured check for every change wastes time in multi-language an
 
 ## Decision
 
-Keep project-policy.json schema version 2 and allow each quality check to declare an optional relative POSIX \`paths\` array. A check runs when any changed path matches any configured pattern. A check without \`paths\` always runs.
+Keep project-policy.json schema version 2 and allow each quality check to declare an optional relative POSIX `paths` array. A check runs when any changed path matches any configured pattern. A check without `paths` always runs.
 
-The runner compares committed changes using \`git diff BASE...HEAD\` with rename detection disabled, so both the old and new paths participate in selection. The caller supplies a verified base ref. Without \`--base\`, all configured checks run. If the diff cannot be resolved, the runner fails. If application source changes but no test check is selected, the runner fails.
+The runner compares committed changes using `git diff BASE...HEAD` with rename detection disabled, so both the old and new paths participate in selection. The caller supplies a verified base ref. Without `--base`, all configured checks run. If the diff cannot be resolved, the runner fails. If application source changes but no test check is selected, the runner fails.
 
 The path patterns are project-owned declarations. The runner does not infer import graphs, test ownership, transitive dependencies or language-specific build relationships. CI fetches full Git history and supplies the pull-request base or push-before commit.
 
@@ -27,11 +27,11 @@ The path patterns are project-owned declarations. The runner does not infer impo
 
 Projects must maintain selectors that include relevant source files, tests, manifests, lockfiles, configuration and generated interfaces. A selector can still be incomplete; requiring a selected test for source changes prevents the most dangerous empty-test case but does not prove that the selected test suite covers the change.
 
-Unscoped checks continue to run for every invocation. A full run remains available by omitting \`--base\`, which is also the safe choice for uncommitted work. The selection mechanism remains language-neutral and does not change release or production-operation boundaries.
+Unscoped checks continue to run for every invocation. A full run remains available by omitting `--base`, which is also the safe choice for uncommitted work. The selection mechanism remains language-neutral and does not change release or production-operation boundaries.
 
 ## Verification
 
-- Unit tests cover glob matching, root and nested \`**\` patterns, selected and skipped checks, unscoped checks, invalid patterns and the source-change/no-test failure.
+- Unit tests cover glob matching, root and nested `**` patterns, selected and skipped checks, unscoped checks, invalid patterns and the source-change/no-test failure.
 - A temporary Git repository test verifies that rename changes report both old and new paths.
 - A non-repository or unknown base must fail with an actionable diagnostic.
 - GitHub Actions verifies the template contract, governance documents and configured quality checks using full history.
