@@ -44,7 +44,8 @@ def validate_paths(paths, index):
     for pattern in paths:
         if not isinstance(pattern, str) or not pattern.strip():
             raise ValueError(f'quality_checks[{index}].paths must contain nonempty strings')
-        if pattern.startswith('/') or '\\' in pattern or '\0' in pattern:
+        windows_drive = len(pattern) >= 2 and pattern[0].isalpha() and pattern[1] == ':'
+        if pattern.startswith('/') or windows_drive or '\\' in pattern or '\0' in pattern:
             raise ValueError(f'quality_checks[{index}].paths must use relative slash-separated patterns')
         parts = pattern.split('/')
         if any(part in {'', '.', '..'} for part in parts):
@@ -109,11 +110,12 @@ def get_changed_paths(base, head='HEAD', root=ROOT):
     if (not isinstance(base, str) or not base or base.startswith('-')
             or base.strip() != base or any(char.isspace() for char in base) or '\0' in base):
         raise ValueError('base must be a nonempty Git ref or commit SHA')
-    if not isinstance(head, str) or not head or head.startswith('-'):
+    if (not isinstance(head, str) or not head or head.startswith('-')
+            or head.strip() != head or any(char.isspace() for char in head) or '\0' in head):
         raise ValueError('head must be a nonempty Git ref or commit SHA')
     revision = f'{base}...{head}'
     result = subprocess.run(
-        ['git', 'diff', '--no-ext-diff', '--no-renames', '--name-only', '-z', revision, '--'],
+        ['git', 'diff', '--no-ext-diff', '--no-textconv', '--no-renames', '--name-only', '-z', revision, '--'],
         cwd=root, check=False, capture_output=True, text=True, encoding='utf-8',
         errors='surrogateescape',
     )
