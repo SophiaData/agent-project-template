@@ -23,6 +23,7 @@ Read the relevant architecture and technology profile. For every changed surface
 - **Operations:** logs, metrics, alerts, performance, rollback and recovery.
 - **Documentation:** owning docs, examples, decision records and upgrade instructions match shipped behavior.
 - **Scope:** speculative generality, duplicate representations, unrelated refactors and unnecessary dependencies.
+- **Agent governance:** when instructions or Skills change, verify scope, ownership, registry membership, metadata and compatibility-entry-point consistency with docs/agent-governance.md.
 
 ## Findings
 
