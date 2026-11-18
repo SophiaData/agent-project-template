@@ -9,4 +9,5 @@ These instructions apply to every file under docs/. Read docs/documentation.md f
 - Preserve ownership, failure behavior, timing, units, defaults, security and compatibility details when editing prose or examples.
 - Defensive patterns must describe a concrete trigger, required invariant, failure prevented, observable evidence, boundary/exception and contrasting incorrect/correct examples. Keep applicability narrow; do not turn a local defect into a universal rule.
 - Verify relative links, commands, code examples and generated references. Never claim an example or check was executed unless it was.
+- Instruction hierarchy and Skill ownership are defined in [agent-governance.md](agent-governance.md); do not duplicate those rules in general documentation guidance.
 - Update the owning document in the same change as the code, API, configuration or data contract it describes.
