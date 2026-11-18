@@ -18,4 +18,4 @@ Raise meaningful domain exceptions, preserve causes with exception chaining, and
 
 ## Testing and tooling
 
-Use the project's configured formatter, linter, type checker and test runner. Tests should isolate external services, use deterministic fixtures and assert behavior. Do not assume pytest, mypy, Ruff or any other tool is installed unless declared by the project.
+Use the project's configured formatter, linter, type checker and test runner. Tests should isolate external services, use deterministic fixtures and assert behavior. Where package or layer direction matters, consider a static import-contract tool such as import-linter and register it as an architecture quality check with a forbidden-import fixture. Do not assume pytest, mypy, Ruff, import-linter or any other tool is installed unless declared by the project.
