@@ -149,6 +149,7 @@ class ProjectTemplateContract(unittest.TestCase):
             errors = []
             verify.verify_agent_instructions(root, errors)
             self.assertTrue(any('fixed roles' in error for error in errors), errors)
+
     def test_technology_profiles_are_present(self):
         profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
         for profile in profiles:
