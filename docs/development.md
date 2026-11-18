@@ -16,7 +16,7 @@ Work on a focused branch or worktree. Keep changes local to the owning module. A
 
 ## 4. Verify
 
-Choose checks based on the changed behavior and its real execution path. Run focused tests first, then the relevant type, lint, build, integration or compatibility checks. Run python scripts/verify_project.py and the configured checks where applicable. Record exact commands, exit status, environment and limitations.
+Choose checks based on the changed behavior and its real execution path. Run focused tests first, then the relevant type, lint, build, integration or compatibility checks. Run python scripts/verify_project.py and the configured checks where applicable. For committed branch changes, fetch the verified base and run `python scripts/run_quality.py --base origin/main` (replace `origin/main` with the actual base); omit `--base` to run all configured checks, including checks for uncommitted work. Record the selected checks, exact commands, exit status, environment and limitations. An unresolved Git diff must fail, not be interpreted as no changed files.
 
 For a new or changed automated guard, add a negative-control test that introduces the intended violation and proves the guard rejects it. A successful run of only valid fixtures is not sufficient evidence for a guard.
 
