@@ -13,6 +13,10 @@ Use the nearest applicable instruction files, from broad to specific:
 
 When instructions conflict, resolve the conflict by scope and ownership: the more specific applicable rule may narrow the broader rule; a tool-specific compatibility file must not override repository engineering policy.
 
+## Instruction-chain preflight
+
+The executable host-aware scope and precedence guide is [instruction-chain governance](instruction-chain-governance.md). For a touched file, inspect the `shared` profile and the relevant host profile before assuming an instruction was loaded. In particular, DSH's additive local candidates, Codex's per-directory overrides and Claude Code's compatibility entry points are different mechanisms. A static source map does not prove host prompt delivery or Agent compliance. Contradictions between distinct prose rules require an explicit owner decision.
+
 ## Root AGENTS.md standard
 
 The root file is the always-on entry point. It should contain only high-value standing orders: what must be read, what must be preserved, what evidence is required, and what delivery boundaries apply. Put examples, rationale, long procedures and technology-specific details in their owning documents.
@@ -58,4 +62,4 @@ When changing AGENTS.md, CLAUDE.md, a subtree AGENTS.md or a Skill:
 4. Run scripts/verify_project.py and the template contract tests.
 5. Review the complete diff and report which checks actually ran.
 
-The durable policy decision is recorded in [docs/decisions/2026-11-18-agent-governance.md](decisions/2026-11-18-agent-governance.md). The verifier treats these rules as executable governance. A green verifier proves structural consistency; it does not prove that a prose rule is complete or that a Skill's behavior is semantically correct.
+The v2.5 decision is recorded in [docs/decisions/2026-11-18-agent-governance.md](decisions/2026-11-18-agent-governance.md); the v2.6 proposal is in [instruction-chain governance decision](decisions/2026-11-18-instruction-chain-governance.md). The verifier treats these rules as executable governance. A green verifier proves structural consistency; it does not prove that a prose rule is complete or that a Skill's behavior is semantically correct.
