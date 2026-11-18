@@ -16,7 +16,7 @@ For each significant module or service, record its responsibility, owned state, 
 
 ## Dependency rules and enforcement
 
-Record the permitted dependency direction between significant modules or layers. Use one row per boundary; name the public interface that consumers must use.
+Record the permitted dependency direction between significant modules or layers. Use one row per boundary; name the public interface that consumers must use. Apply the [module dependency defensive pattern](defensive-patterns/general.md#module-dependencies-follow-permitted-direction) when changing these edges.
 
 | Source module or layer | May depend on | Must not depend on | Public interface |
 | --- | --- | --- | --- |
