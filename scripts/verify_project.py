@@ -66,7 +66,7 @@ def verify_agent_instructions(root, errors):
     if agent_file.is_file():
         body = agent_file.read_text(encoding='utf-8')
         for section in ROOT_AGENT_SECTIONS:
-            if not re.search(rf'(?m)^## {re.escape(section)}\s*\Z', body):
+            if not re.search(rf'(?m)^## {re.escape(section)}\s*(?=\r?\n|\Z)', body):
                 errors.append(f'AGENTS.md missing required section: {section}')
         if len(body.splitlines()) > 120:
             errors.append('AGENTS.md is no longer a concise standing-order entry point')
