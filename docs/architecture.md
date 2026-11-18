@@ -26,7 +26,7 @@ Treat the dependency graph as acyclic unless an explicit decision records why a 
 
 Enforce these rules with a stack-native static or test-based architecture check. Configure it as a quality-check entry with category `architecture`; include all relevant source modules and rule configuration in its `paths`. Every architecture guard needs an intentionally forbidden dependency fixture that proves it fails for the expected reason.
 
-Possible tools include import-linter for Python, dependency-cruiser or ESLint boundary rules for TypeScript, ArchUnit for Java, and project-owned model-DAG checks over dbt manifests or warehouse lineage for data engineering. These are examples, not template dependencies. Select a tool that can observe the actual runtime and build graph.
+Possible tools include import-linter for Python, dependency-cruiser or ESLint boundary rules for TypeScript, ArchUnit for Java, and project-owned model-DAG checks over dbt manifests or warehouse lineage for data engineering. These are examples, not template dependencies. Select a tool that can observe the actual runtime and build graph. For example, a Python project using import-linter may declare `{"category":"architecture","argv":["lint-imports"],"paths":["src/**","pyproject.toml",".importlinter"]}` in project-policy.json. The guard must include a forbidden-import fixture and must not replace the required test check.
 
 ## Data flow and state
 
@@ -46,4 +46,4 @@ Link to public APIs, event schemas, database contracts, persisted formats and mi
 
 ## Decisions
 
-Keep durable decisions and rejected alternatives in docs/decisions/. This document describes the current architecture; decision records explain why it took this shape.
+Keep durable decisions and rejected alternatives in docs/decisions/. This document describes the current architecture; decision records explain why it took this shape. The policy for project-owned architecture checks is recorded in [this decision](decisions/2026-11-18-project-owned-architecture-checks.md).
