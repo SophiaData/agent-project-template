@@ -62,6 +62,6 @@ CI fetches full Git history and supplies the PR base commit or push-before commi
 
 ## Evidence and quality gates
 
-Configure real commands in project-policy.json as category plus argv tokens, with optional `paths` selectors. At least one test-category check is required once application source exists. The runner does not invoke a shell and rejects obvious no-op commands, but test discovery and assertion quality remain project responsibilities.
+Configure real commands in project-policy.json as category plus argv tokens, with optional `paths` selectors. The rationale and trade-offs are recorded in [the diff-aware quality selection decision](decisions/2026-11-18-diff-aware-quality-check-selection.md). At least one test-category check is required once application source exists. The runner does not invoke a shell and rejects obvious no-op commands, but test discovery and assertion quality remain project responsibilities.
 
 For each PR, report exact commands, PASS / FAIL / NOT RUN / BLOCKED status, runtime and relevant output or CI link. Distinguish static analysis, unit tests, integration tests, end-to-end tests and manual validation.
