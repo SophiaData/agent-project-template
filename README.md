@@ -63,7 +63,7 @@ For example, a Python project may scope its checks like this (replace commands a
 }
 ~~~
 
-A project may add lint, typecheck, build, SQL validation and other checks that its actual toolchain supports. Do not declare a check merely to make the policy green.
+A project may add lint, typecheck, build, SQL validation and architecture checks that its actual toolchain supports. Use the `architecture` category for a stack-native import or dependency-boundary guard, and include a negative-control fixture for each guard. Do not declare a check merely to make the policy green.
 
 ## Template updates
 
