@@ -8,7 +8,7 @@ Thank you for improving this engineering standards template.
 2. Open a focused branch from the current default branch.
 3. Keep the change scoped; explain any new abstraction, dependency or policy requirement.
 4. Add regression tests for changed behavior and update affected documentation.
-5. Run the template contract tests, project verifier and configured quality checks.
+5. Run the template contract tests and project verifier. Fetch the verified PR base and use `python scripts/run_quality.py --base <base-ref>` for committed changes, or omit `--base` to run all configured checks.
 6. Inspect the complete diff, including generated files, workflows and policy changes.
 7. Complete the pull-request template with exact command results and remaining risks.
 
