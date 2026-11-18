@@ -20,7 +20,7 @@ Record the permitted dependency direction between significant modules or layers.
 
 | Source module or layer | May depend on | Must not depend on | Public interface |
 | --- | --- | --- | --- |
-| <module> | <allowed modules> | <forbidden modules> | <package/API entry point> |
+| module-name | allowed-modules | forbidden-modules | public-package-or-API-entry-point |
 
 Treat the dependency graph as acyclic unless an explicit decision records why a cycle is necessary. Do not import private implementation paths across package boundaries. Record each exception with its owner, scope and reason; do not use broad tool exclusions to hide violations.
 
