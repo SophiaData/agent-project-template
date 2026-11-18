@@ -45,6 +45,21 @@ class ProjectTemplateContract(unittest.TestCase):
         for name in docs:
             self.assertTrue((ROOT / 'docs/defensive-patterns' / name).is_file(), name)
 
+    def test_testing_policy_requires_independent_outcome_verification(self):
+        policy = (ROOT / 'docs/testing.md').read_text(encoding='utf-8')
+        self.assertIn('Verify actual outcomes', policy)
+        self.assertIn("agent's own success message", policy)
+
+    def test_testing_policy_requires_supported_entry_path_for_shipped_behavior(self):
+        policy = (ROOT / 'docs/testing.md').read_text(encoding='utf-8')
+        self.assertIn('Exercise the supported execution path', policy)
+        self.assertIn('built artifact', policy)
+
+    def test_pr_template_requires_test_design_and_ai_disclosure(self):
+        template = (ROOT / '.github/pull_request_template.md').read_text(encoding='utf-8')
+        self.assertIn('## Test design', template)
+        self.assertIn('## AI assistance (when applicable)', template)
+
     def test_empty_directory_has_no_application_code(self):
         with tempfile.TemporaryDirectory() as path:
             self.assertFalse(quality.has_application_code(Path(path)))
