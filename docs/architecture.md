@@ -14,6 +14,20 @@ Describe upstream and downstream systems, trust boundaries, protocols, deploymen
 
 For each significant module or service, record its responsibility, owned state, public interface and lifecycle owner. Explain dependency direction and the permitted paths between layers. Avoid duplicating detailed API references that belong with the owning module.
 
+## Dependency rules and enforcement
+
+Record the permitted dependency direction between significant modules or layers. Use one row per boundary; name the public interface that consumers must use.
+
+| Source module or layer | May depend on | Must not depend on | Public interface |
+| --- | --- | --- | --- |
+| <module> | <allowed modules> | <forbidden modules> | <package/API entry point> |
+
+Treat the dependency graph as acyclic unless an explicit decision records why a cycle is necessary. Do not import private implementation paths across package boundaries. Record each exception with its owner, scope and reason; do not use broad tool exclusions to hide violations.
+
+Enforce these rules with a stack-native static or test-based architecture check. Configure it as a quality-check entry with category `architecture`; include all relevant source modules and rule configuration in its `paths`. Every architecture guard needs an intentionally forbidden dependency fixture that proves it fails for the expected reason.
+
+Possible tools include import-linter for Python, dependency-cruiser or ESLint boundary rules for TypeScript, ArchUnit for Java, and project-owned model-DAG checks over dbt manifests or warehouse lineage for data engineering. These are examples, not template dependencies. Select a tool that can observe the actual runtime and build graph.
+
 ## Data flow and state
 
 Document important request, event, batch or streaming paths. Identify source of truth, consistency expectations, data grain, persistence boundaries, retention and recovery behavior where applicable.
