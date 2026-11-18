@@ -19,7 +19,8 @@ SKIP_DIRECTORIES = {'.git', '.github', '.agents', '.venv', 'venv', 'node_modules
                     'dist', 'build', 'target', 'coverage', '__pycache__',
                     '.pytest_cache', '.mypy_cache', '.next', '.nuxt', 'vendor', 'docs'}
 TEMPLATE_TOOLS = {'scripts/run_quality.py', 'scripts/verify_project.py',
-                  'scripts/configure_project.py', 'tests/test_template_contract.py'}
+                  'scripts/configure_project.py', 'scripts/instruction_chain.py',
+                  'tests/test_template_contract.py', 'tests/test_template_instruction_chain.py'}
 ALLOWED_CATEGORIES = {'test', 'lint', 'typecheck', 'build', 'sql', 'architecture'}
 PLACEHOLDERS = {'PROJECT_NAME', 'PROJECT_TYPE'}
 ALLOWED_CHECK_KEYS = {'category', 'argv', 'paths'}
