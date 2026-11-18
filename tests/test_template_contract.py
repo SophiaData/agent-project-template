@@ -48,7 +48,7 @@ class ProjectTemplateContract(unittest.TestCase):
     def test_testing_policy_requires_independent_outcome_verification(self):
         policy = (ROOT / 'docs/testing.md').read_text(encoding='utf-8')
         self.assertIn('Verify actual outcomes', policy)
-        self.assertIn("agent's own success message", policy)
+        self.assertIn("agent's own response", policy)
 
     def test_testing_policy_requires_supported_entry_path_for_shipped_behavior(self):
         policy = (ROOT / 'docs/testing.md').read_text(encoding='utf-8')
