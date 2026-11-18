@@ -11,7 +11,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 
 ## Engineering rules
 
-- Preserve module ownership and dependency direction. Put behavior beside the capability that owns its data and lifecycle.
+- Preserve module ownership and dependency direction. When a dependency boundary changes, update docs/architecture.md and the owning architecture check. Put behavior beside the capability that owns its data and lifecycle.
 - Prefer the smallest complete change. Avoid speculative abstractions, duplicate representations and unrelated refactors.
 - Make contracts explicit: types, inputs, outputs, invariants, ownership, side effects and failure behavior.
 - Validate untrusted inputs at real trust boundaries. Do not add redundant validation to trusted, typed same-process calls without a demonstrated need.

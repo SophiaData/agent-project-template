@@ -27,7 +27,7 @@ For Flink, Kafka and similar systems, define event-time and watermark behavior, 
 
 ## dbt and modeled datasets
 
-Keep source declarations, model dependencies, tests, documentation and materialization strategy aligned. Test uniqueness, not-null, relationships and accepted values where they express real contracts. Make incremental predicates and unique keys explicit. Review compiled SQL and execution plans for critical models.
+Keep source declarations, model dependencies, tests, documentation and materialization strategy aligned. Test uniqueness, not-null, relationships and accepted values where they express real contracts. Make incremental predicates and unique keys explicit. Review compiled SQL and execution plans for critical models. Where layer or model dependency direction matters, validate the actual dbt manifest or warehouse lineage with a project-owned architecture check and include an invalid cross-layer or cyclic dependency fixture.
 
 ## Data quality and operations
 

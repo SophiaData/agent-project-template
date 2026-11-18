@@ -284,3 +284,36 @@ reconciliation matched across both runs.
 
 ### Enforcement
 PR evidence and review. Add a repeatable benchmark gate only when the workload and threshold are stable enough to be meaningful.
+
+## Module dependencies follow permitted direction
+
+### Applies when
+A change adds or modifies package, service, layer or data-model dependencies, or moves code across a documented module boundary.
+
+### Required invariant
+Every dependency follows a permitted direction recorded by the owning project in docs/architecture.md. The dependency graph is acyclic unless a narrowly scoped exception is explicitly approved. Cross-package consumers use public interfaces rather than private implementation paths.
+
+### Failure prevented
+Circular imports, layer violations, hidden reach-through, shared-kernel growth, tests that require unrelated modules to initialize and changes that cannot be isolated behind an owned interface.
+
+### Evidence
+Inspect the changed dependency edges and run the project's architecture check against the complete affected module graph. Include an intentionally forbidden dependency fixture and prove that the guard rejects it for the expected rule. A passing valid graph alone is not sufficient evidence.
+
+### Boundary and exception
+Static dependency tools may not see reflection, dependency injection, generated code, plugin registration, event routing or runtime-loaded modules. Document each necessary exception with its owner, scope and reason; do not use broad exclusions to hide unrelated violations. A dependency direction may change only with an architecture decision and migration plan.
+
+### Incorrect example
+~~~python
+# Domain logic reaches upward into an HTTP delivery module.
+from application.http.request_context import current_request
+~~~
+
+### Correct example
+~~~python
+# The HTTP adapter depends on the domain interface; the domain stays independent.
+from domain.orders import OrderService
+~~~
+
+### Enforcement
+Record allowed and forbidden dependency directions in docs/architecture.md. Configure a stack-native static or test-based guard under the quality-check category architecture. Every new or changed guard needs a negative-control fixture. The template does not infer dependency rules from directory names or impose one parser on every language.
+

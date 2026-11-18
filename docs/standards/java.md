@@ -18,4 +18,4 @@ Use domain exceptions at API boundaries, preserve causes and avoid using excepti
 
 ## Testing and tooling
 
-Use the project's declared build tool, static analysis and test framework. Test public contracts and integration with external services using isolated fixtures. Do not assume Maven, Gradle, JUnit or a specific JDK unless configured.
+Use the project's declared build tool, static analysis and test framework. Test public contracts and integration with external services using isolated fixtures. Where package or layer direction matters, consider ArchUnit tests and expose the architecture suite as an architecture quality check with a forbidden-dependency fixture. Do not assume Maven, Gradle, JUnit, ArchUnit or a specific JDK unless configured.

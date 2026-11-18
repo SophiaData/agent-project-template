@@ -8,7 +8,7 @@ Make behavior, invariants and side effects explicit. Prefer readable control flo
 
 ## Ownership and boundaries
 
-Place behavior beside the data and lifecycle it owns. Keep dependency direction explicit. Avoid cyclic dependencies, cross-layer reach-through and generic services that expose methods for only one internal caller. Prefer narrow interfaces and cohesive modules.
+Place behavior beside the data and lifecycle it owns. Keep dependency direction explicit. Avoid cyclic dependencies, cross-layer reach-through and generic services that expose methods for only one internal caller. Prefer narrow interfaces and cohesive modules. Record permitted and forbidden module edges in [docs/architecture.md](architecture.md) and enforce material boundaries with stack-native architecture checks where practical.
 
 ## Simplicity and dependencies
 

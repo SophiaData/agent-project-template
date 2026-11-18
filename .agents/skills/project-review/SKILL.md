@@ -14,7 +14,7 @@ Read the relevant architecture and technology profile. For every changed surface
 ## Review dimensions
 
 - **Correctness:** normal, boundary, invalid-input and failure paths; data integrity; deterministic behavior.
-- **Ownership:** module boundaries, dependency direction, state ownership, lifecycle and public API necessity.
+- **Ownership:** module boundaries, dependency direction, state ownership, lifecycle and public API necessity. Compare changed dependency edges with docs/architecture.md and inspect the architecture check and its forbidden-dependency fixture where configured.
 - **Concurrency:** races, cancellation, timeout, resource acquisition and quiescent cleanup.
 - **Errors:** structured failure, cause preservation, safe retry, partial effects and visible unknown outcomes.
 - **Security:** trust boundaries, authorization, secret handling, filesystem/network exposure and dependency changes.

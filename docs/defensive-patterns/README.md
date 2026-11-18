@@ -25,7 +25,7 @@ Each pattern records:
 
 | Change area | Read |
 | --- | --- |
-| Shared state, asynchronous work, resource ownership, cancellation, retries, error reporting and performance | [general.md](general.md) |
+| Module dependency direction, shared state, asynchronous work, resource ownership, cancellation, retries, error reporting and performance | [general.md](general.md) |
 | SQL models, warehouse tables, batch jobs, streaming pipelines, data contracts and migrations | [data-engineering.md](data-engineering.md) |
 
 Read the relevant patterns before implementation and again during review. A pattern is not a reason to add defensive code without a real trigger: identify the owner, observable risk and smallest evidence that proves the invariant.

@@ -8,7 +8,7 @@ Inspect the repository, architecture, affected modules, callers, tests and deplo
 
 ## 2. Design the smallest complete change
 
-Prefer existing interfaces and extension points. Trace producers and consumers before adding fields, states, configuration, dependencies or abstractions. Explain why each new public choice is needed and what owns it. Read the applicable [defensive patterns](defensive-patterns/README.md) before implementing a change that matches one of their triggers.
+Prefer existing interfaces and extension points. Trace producers and consumers before adding fields, states, configuration, dependencies or abstractions. Explain why each new public choice is needed and what owns it. For module-boundary changes, update the permitted dependency directions in docs/architecture.md and identify the stack-native architecture check. Read the applicable [defensive patterns](defensive-patterns/README.md) before implementing a change that matches one of their triggers.
 
 ## 3. Implement
 
