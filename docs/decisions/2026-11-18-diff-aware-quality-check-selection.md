@@ -1,7 +1,7 @@
 # Decision: diff-aware quality check selection
 
 - Date: 2026-11-18
-- Status: Proposed
+- Status: Accepted
 - Owners: Project maintainers
 
 ## Problem and context
