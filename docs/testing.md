@@ -16,7 +16,15 @@ Choose levels based on risk. Do not create expensive end-to-end tests for every 
 
 Prefer observable assertions over implementation-shaped assertions. Test edge cases, error paths, ordering, concurrency and permanent regressions. A test that passes only in isolation has a resource or synchronization defect unless isolation is an explicit contract.
 
-Tests must own and release temporary files, ports, databases, queues, processes and global state. Use deterministic synchronization rather than arbitrary sleeps. Set timeouts from the full operation budget and ensure teardown waits for owned work to stop. Apply relevant [defensive patterns](defensive-patterns/README.md) when tests or fixtures own asynchronous work or shared resources.
+Tests must own and release temporary files, ports, databases, queues, processes and global state. Use deterministic synchronization rather than arbitrary sleeps. Set timeouts from the full operation budget and ensure teardown waits for owned work to stop. Process isolation does not automatically isolate ports, predictable paths, database names, queues or child processes; allocate these resources uniquely and test concurrent execution when the shared boundary matters. Apply relevant [defensive patterns](defensive-patterns/README.md) when tests or fixtures own asynchronous work or shared resources.
+
+## Verify actual outcomes
+
+For agent, CLI, workflow or automation behavior, assert the resulting world rather than trusting the component's own success message. Re-read the file, query persisted state, inspect the durable event or run the resulting command independently. Where preservation matters, also assert that untouched state remains unchanged. A keyword check against the agent's own response is not evidence that the requested side effect occurred.
+
+## Exercise the supported execution path
+
+When a change affects user-visible behavior, application composition, packaging or a published interface, include an integration or smoke test through the supported entry point or built artifact. Keep the real internal path under test and mock only expensive or nondeterministic external boundaries. Unit tests remain useful, but do not claim they prove a shipped composition or runtime path they never execute.
 
 ## Negative controls for quality gates
 
