@@ -34,8 +34,121 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.4.0')
+        self.assertEqual(version, '2.5.0')
 
+    def test_agent_governance_contract_is_valid(self):
+        errors = []
+        verify.verify_agent_instructions(ROOT, errors)
+        self.assertEqual(errors, [])
+        errors = []
+        verify.verify_skills(ROOT, errors)
+        self.assertEqual(errors, [])
+
+    def test_skill_verifier_discovers_new_skill_without_allowlist(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            skill = root / '.agents/skills/sample-check'
+            skill.mkdir(parents=True)
+            (skill / 'SKILL.md').write_text(
+                '---\nname: sample-check\ndescription: Validate a sample project change.\n---\n'
+                '# Sample check\n\n1. Inspect the change.\n',
+                encoding='utf-8',
+            )
+            registry = root / '.agents/skills/README.md'
+            registry.write_text(
+                '# Project Skills\n\n'
+                '- [sample-check](sample-check/SKILL.md) — Validate a sample project change.\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_skills(root, errors)
+            self.assertEqual(errors, [])
+
+    def test_skill_verifier_rejects_orphan_directory(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            (root / '.agents/skills/orphan').mkdir(parents=True)
+            (root / '.agents/skills/README.md').write_text('# Project Skills\n', encoding='utf-8')
+            errors = []
+            verify.verify_skills(root, errors)
+            self.assertTrue(any('missing SKILL.md' in error for error in errors), errors)
+
+    def test_skill_verifier_rejects_registry_drift(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            skill = root / '.agents/skills/sample-check'
+            skill.mkdir(parents=True)
+            (skill / 'SKILL.md').write_text(
+                '---\nname: sample-check\ndescription: Validate a sample project change.\n---\n'
+                '# Sample check\n',
+                encoding='utf-8',
+            )
+            (root / '.agents/skills/README.md').write_text(
+                '# Project Skills\n\n'
+                '- [ghost-check](ghost-check/SKILL.md) — Missing skill.\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_skills(root, errors)
+            self.assertTrue(any('missing from registry' in error for error in errors), errors)
+            self.assertTrue(any('missing directory' in error for error in errors), errors)
+
+    def test_skill_verifier_rejects_model_role_assignment(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            skill = root / '.agents/skills/sample-check'
+            skill.mkdir(parents=True)
+            (skill / 'SKILL.md').write_text(
+                '---\nname: sample-check\ndescription: Validate a sample project change.\n---\n'
+                '# Sample check\n\nClaude is reviewer.\n',
+                encoding='utf-8',
+            )
+            (root / '.agents/skills/README.md').write_text(
+                '# Project Skills\n\n'
+                '- [sample-check](sample-check/SKILL.md) — Validate a sample project change.\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_skills(root, errors)
+            self.assertTrue(any('fixed roles' in error for error in errors), errors)
+
+    def test_agent_verifier_rejects_divergent_claude_entry_point(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            (root / 'AGENTS.md').write_text(
+                '# Engineering standards\n\n'
+                '## Before changing code\n\nRead the repository.\n'
+                '## Engineering rules\n\nPreserve contracts.\n'
+                '## Delivery boundaries\n\nDo not publish automatically.\n'
+                '## Quality commands\n\nRun the checks.\n'
+                '## Reusable workflows\n\nUse Skills.\n',
+                encoding='utf-8',
+            )
+            (root / 'CLAUDE.md').write_text('# Claude Code project entry point\n\nOwn rules.\n', encoding='utf-8')
+            errors = []
+            verify.verify_agent_instructions(root, errors)
+            self.assertTrue(any('shared AGENTS.md source' in error for error in errors), errors)
+
+    def test_agent_verifier_rejects_fixed_model_role(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            (root / 'AGENTS.md').write_text(
+                '# Engineering standards\n\n'
+                '## Before changing code\n\nRead the repository.\n'
+                '## Engineering rules\n\nGPT is planner.\n'
+                '## Delivery boundaries\n\nDo not publish automatically.\n'
+                '## Quality commands\n\nRun the checks.\n'
+                '## Reusable workflows\n\nUse Skills.\n',
+                encoding='utf-8',
+            )
+            (root / 'CLAUDE.md').write_text(
+                '# Claude Code project entry point\n\n'
+                'Read and follow [AGENTS.md](AGENTS.md). That file is the shared source of repository rules for all Agents.\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_agent_instructions(root, errors)
+            self.assertTrue(any('fixed roles' in error for error in errors), errors)
     def test_technology_profiles_are_present(self):
         profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
         for profile in profiles:
@@ -301,7 +414,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.4.0', require_checks_when_code_exists=True,
+                    template_version='2.5.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 
