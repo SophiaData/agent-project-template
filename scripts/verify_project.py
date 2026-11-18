@@ -123,6 +123,13 @@ def verify_skills(root, errors):
             errors.append(f'Skill body must contain a non-empty level-1 heading: {rel}')
         if ROLE_ASSIGNMENT_RE.search(body):
             errors.append(f'Skill assigns fixed roles to a model or agent: {rel}')
+        for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
+            link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
+            if not link or link.startswith(('https:', 'http:', 'mailto:')):
+                continue
+            location = (skill_file.parent / unquote(link)).resolve()
+            if not location.is_relative_to(root) or not location.exists():
+                errors.append(f'Broken/unsafe link: {rel} => {href}')
         discovered[entry.name] = rel
 
     registry_body = registry.read_text(encoding='utf-8')
