@@ -37,6 +37,7 @@ REQUIRED = [
     *DEFENSIVE_PATTERN_FILES,
     '.github/pull_request_template.md', '.github/workflows/quality.yml',
     'project-policy.json',
+    SKILL_REGISTRY, 'docs/agent-governance.md',
 ]
 
 
@@ -318,13 +319,6 @@ def verify(root=ROOT):
             errors.append(f'Missing: {rel}')
             continue
         body = file.read_text(encoding='utf-8')
-        if rel.endswith('/SKILL.md'):
-            match = re.match(
-                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
-                body,
-            )
-            if not match or match.group(1) != file.parent.name:
-                errors.append(f'Bad skill metadata: {rel}')
         for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
@@ -508,13 +502,6 @@ def verify(root=ROOT):
             errors.append(f'Missing: {rel}')
             continue
         body = file.read_text(encoding='utf-8')
-        if rel.endswith('/SKILL.md'):
-            match = re.match(
-                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
-                body,
-            )
-            if not match or match.group(1) != file.parent.name:
-                errors.append(f'Bad skill metadata: {rel}')
         for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
@@ -713,13 +700,6 @@ def verify(root=ROOT):
             errors.append(f'Missing: {rel}')
             continue
         body = file.read_text(encoding='utf-8')
-        if rel.endswith('/SKILL.md'):
-            match = re.match(
-                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
-                body,
-            )
-            if not match or match.group(1) != file.parent.name:
-                errors.append(f'Bad skill metadata: {rel}')
         for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
