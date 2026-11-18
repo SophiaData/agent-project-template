@@ -5,6 +5,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 ## Before changing code
 
 - Read docs/architecture.md, docs/coding-standards.md, docs/development.md and docs/testing.md. Read the relevant technology profile under docs/standards/.
+- Read the applicable rules in docs/defensive-patterns/ before changing shared state, asynchronous lifecycles, resource ownership, retries, SQL/data grain, streaming guarantees or schema contracts.
 - Trace the existing implementation, callers, tests, configuration and deployment path before proposing a change.
 - State scope, non-goals, acceptance criteria and compatibility or data risks for substantive work.
 

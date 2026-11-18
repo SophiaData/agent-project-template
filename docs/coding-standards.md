@@ -20,7 +20,7 @@ Name inputs, outputs, units, nullability, ordering, side effects and failure beh
 
 ## State, concurrency and resources
 
-Identify who owns mutable state, promises, locks, callbacks, timers, workers and external resources. Define initialization, cancellation, timeout, cleanup and shutdown behavior. Prevent races before publishing state. Release resources deterministically and wait for owned work to settle when required.
+Identify who owns mutable state, promises, locks, callbacks, timers, workers and external resources. Define initialization, cancellation, timeout, cleanup and shutdown behavior. Prevent races before publishing state. Release resources deterministically and wait for owned work to settle when required. Apply the relevant [defensive patterns](defensive-patterns/README.md) when these lifecycle risks are present.
 
 ## Errors and observability
 

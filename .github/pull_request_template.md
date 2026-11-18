@@ -6,6 +6,12 @@
 
 <!-- Acceptance criteria, affected modules, non-goals and key design decisions. -->
 
+## Defensive-pattern review
+
+- [ ] Applicable defensive patterns were identified and reviewed.
+- [ ] New or changed automated guards have a negative-control test.
+- [ ] Exceptions are documented with an owner and bounded scope, if applicable.
+
 ## Compatibility and operational impact
 
 <!-- Public API, data/schema, migration, rollout, rollback or recovery implications. -->

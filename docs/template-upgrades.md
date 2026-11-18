@@ -22,4 +22,10 @@ This is an additive engineering-standards upgrade. The project-policy.json schem
 
 Review and adopt the new coding, testing, error-handling, documentation, compatibility, Git and technology-profile documents. Reconcile the root AGENTS.md and reusable Skills with local project rules. Add decision records where durable choices need to be documented.
 
+### V2.1 to V2.2
+
+This is an additive engineering-governance upgrade. The project-policy.json schema remains version 2; existing quality_checks entries remain valid.
+
+Adopt the defensive-pattern catalog for the changed surfaces. The template verifier now checks that each documented pattern has its required sections, and template contract tests include negative controls that deliberately omit required content or introduce broken links. Review semantic applicability and implementation separately; the structural checks do not enforce application code behavior.
+
 No automatic overwrite is performed. Run the project's configured checks and review the resulting diff before merging.

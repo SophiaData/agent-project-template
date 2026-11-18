@@ -1,6 +1,6 @@
 # SQL and data engineering standards
 
-Apply these rules to SQL, batch processing, streaming jobs, data models and analytical pipelines. Also follow the language profile for the implementation language.
+Apply these rules to SQL, batch processing, streaming jobs, data models and analytical pipelines. Also follow the language profile for the implementation language and the applicable [data engineering defensive patterns](../defensive-patterns/data-engineering.md).
 
 ## Data contracts and grain
 
