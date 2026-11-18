@@ -11,9 +11,10 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_EXTENSIONS = {'.py', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.sql',
-                     '.java', '.scala', '.kt', '.go', '.rs', '.sh', '.rb', '.php',
-                     '.cs', '.cpp', '.c', '.h', '.hpp'}
+SOURCE_EXTENSIONS = {'.py', '.ipynb', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs',
+                     '.sql', '.hql', '.hive', '.ddl', '.dml', '.java', '.scala', '.kt',
+                     '.go', '.rs', '.sh', '.rb', '.r', '.php', '.cs', '.cpp', '.c',
+                     '.h', '.hpp'}
 SKIP_DIRECTORIES = {'.git', '.github', '.agents', '.venv', 'venv', 'node_modules',
                     'dist', 'build', 'target', 'coverage', '__pycache__',
                     '.pytest_cache', '.mypy_cache', '.next', '.nuxt', 'vendor', 'docs'}
