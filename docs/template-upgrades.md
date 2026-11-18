@@ -37,3 +37,9 @@ This is an additive quality-runner upgrade. The project-policy.json schema remai
 Projects may add a relative slash-separated paths array to a quality check to select it only when a changed file matches. Checks without paths always run. Configure patterns to include the source, owning tests and relevant manifests, lockfiles or configuration files. When application source changes, at least one test check must match or the runner fails. Unknown Git bases and failed diff commands also fail closed.
 
 CI now fetches full Git history and supplies the pull-request base or push-before commit. Local contributors should fetch the verified base and run `scripts/run_quality.py --base <base-ref>` for committed changes; omit `--base` to run all configured checks, including checks needed while validating uncommitted work. Review each project's path selectors rather than copying the example patterns blindly.
+
+### V2.3 to V2.4
+
+This is an additive architecture-governance upgrade. The project-policy.json schema remains version 2. Existing quality-check entries remain valid. The runner adds the `architecture` category for stack-native module and layer dependency checks.
+
+Projects should record permitted and forbidden dependency directions in docs/architecture.md, then configure an architecture check only when the project has enforceable module boundaries and a suitable tool. Python, TypeScript, Java and data-engineering profiles provide optional examples; no tool is installed or required automatically. Each architecture guard must include a deliberately forbidden dependency fixture and must not replace the required test-category check.
