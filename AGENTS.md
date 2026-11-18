@@ -6,6 +6,7 @@ This repository is a stack-neutral engineering standards template. These rules a
 
 - Read docs/architecture.md, docs/coding-standards.md, docs/development.md and docs/testing.md. Read the relevant technology profile under docs/standards/.
 - Read the applicable rules in docs/defensive-patterns/ before changing shared state, asynchronous lifecycles, resource ownership, retries, SQL/data grain, streaming guarantees or schema contracts.
+- Read docs/agent-governance.md before editing AGENTS.md, CLAUDE.md, subtree instruction files or Skills.
 - Trace the existing implementation, callers, tests, configuration and deployment path before proposing a change.
 - State scope, non-goals, acceptance criteria and compatibility or data risks for substantive work.
 
@@ -35,4 +36,4 @@ Run python scripts/verify_project.py and the template contract tests for changes
 
 ## Reusable workflows
 
-Use the applicable Skill in .agents/skills/ for planning, implementation, review, pre-push verification, documentation, error handling, simplification or upgrade guidance. Skills describe task workflows; they do not define fixed GPT, Claude, Codex or other agent roles.
+Use the applicable Skill in .agents/skills/ for planning, implementation, review, pre-push verification, documentation, error handling, simplification, upgrade guidance or agent-governance checks. Skills describe task workflows; they do not define fixed model, editor or harness roles.
