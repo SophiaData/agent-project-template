@@ -66,7 +66,7 @@ def validate_policy(policy, has_code):
                 or not set(entry).issubset(ALLOWED_CHECK_KEYS)):
             raise ValueError(f'quality_checks[{i}] must contain category and argv, with optional paths')
         kind, argv = entry['category'], entry['argv']
-        if kind not in ALLOWED_CATEGORIES:
+        if not isinstance(kind, str) or kind not in ALLOWED_CATEGORIES:
             raise ValueError(f'quality_checks[{i}] has unsupported category')
         if not isinstance(argv, list) or not argv or not all(isinstance(a, str) and a for a in argv):
             raise ValueError(f'quality_checks[{i}] argv must contain nonempty tokens')
