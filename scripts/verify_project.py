@@ -53,7 +53,7 @@ def verify_defensive_patterns(root, errors):
         if not file.is_file():
             continue  # The required-file check reports the missing document.
         body = file.read_text(encoding='utf-8')
-        headings = list(re.finditer(r'(?m)^## (.+?)\\s*$', body))
+        headings = list(re.finditer(r'(?m)^## (.+?)\s*$', body))
         if not headings:
             errors.append(f'Defensive patterns contain no rules: {rel}')
             continue
@@ -61,7 +61,7 @@ def verify_defensive_patterns(root, errors):
             end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
             section = body[heading.end():end]
             for required in PATTERN_SUBSECTIONS:
-                pattern = rf'(?m)^### {re.escape(required)}\\s*$'
+                pattern = rf'(?m)^### {re.escape(required)}\s*$'
                 if not re.search(pattern, section):
                     errors.append(
                         f'Defensive pattern missing subsection "{required}": {rel} / {heading.group(1)}'
@@ -80,12 +80,12 @@ def verify(root=ROOT):
         body = file.read_text(encoding='utf-8')
         if rel.endswith('/SKILL.md'):
             match = re.match(
-                r'\\A---\\r?\\nname: ([a-z][a-z0-9-]*)\\r?\\ndescription: ([^\\r\\n]+)\\r?\\n---\\r?\\n',
+                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
                 body,
             )
             if not match or match.group(1) != file.parent.name:
                 errors.append(f'Bad skill metadata: {rel}')
-        for href in re.findall(r'!?\\[[^]]*\\]\\(([^)]+)\\)', body):
+        for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
                 continue

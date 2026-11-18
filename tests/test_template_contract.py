@@ -53,7 +53,7 @@ class ProjectTemplateContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             (root / 'backend').mkdir()
-            (root / 'backend' / 'server.py').write_text('print("hello")\\n')
+            (root / 'backend' / 'server.py').write_text('print("hello")\n')
             self.assertTrue(quality.has_application_code(root))
             checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest']}]
             self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
@@ -62,7 +62,7 @@ class ProjectTemplateContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             (root / 'backend/service').mkdir(parents=True)
-            (root / 'backend/service/api.go').write_text('package api\\n')
+            (root / 'backend/service/api.go').write_text('package api\n')
             self.assertTrue(quality.has_application_code(root))
 
     def test_empty_test_list_rejected_once_source_exists(self):
@@ -107,8 +107,8 @@ class ProjectTemplateContract(unittest.TestCase):
             doc = root / 'docs/defensive-patterns/general.md'
             doc.parent.mkdir(parents=True)
             doc.write_text(
-                '## Deliberately incomplete rule\\n\\n'
-                '### Applies when\\nA test fixture activates this rule.\\n',
+                '## Deliberately incomplete rule\n\n'
+                '### Applies when\nA test fixture activates this rule.\n',
                 encoding='utf-8',
             )
             errors = []
@@ -123,7 +123,7 @@ class ProjectTemplateContract(unittest.TestCase):
             root = Path(path)
             doc = root / 'docs/defensive-patterns/README.md'
             doc.parent.mkdir(parents=True)
-            doc.write_text('[deliberately broken](missing-target.md)\\n', encoding='utf-8')
+            doc.write_text('[deliberately broken](missing-target.md)\n', encoding='utf-8')
             errors = verify.verify(root)
             self.assertTrue(
                 any(error.startswith('Broken/unsafe link: docs/defensive-patterns/README.md')
