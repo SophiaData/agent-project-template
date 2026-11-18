@@ -49,6 +49,20 @@ Supported project classifications: generic, python, node, java, data and mixed. 
 
 The project policy keeps the V2 schema and typed quality-check format. Once application source exists, at least one real test check is required. The runner executes argv arrays without a shell and rejects obvious no-op commands; it cannot prove that a test suite is meaningful or non-empty. Configure framework-specific fail-on-empty behavior or a project-owned test-discovery check. Review the test design and CI environment as well as the exit code.
 
+A quality check may add an optional `paths` array to run only when a changed file matches one of its relative POSIX glob patterns. `*` and `?` match within a path segment; a complete `**` segment matches zero or more segments. Checks without `paths` always run. Existing V2 entries remain valid. Run `python scripts/run_quality.py --base origin/main` after fetching the actual base to select checks for committed changes; omit `--base` to run every check. An unknown base fails closed. A source change must match at least one test check or the runner fails. See docs/testing.md for the exact behavior and limitations.
+
+For example, a Python project may scope its checks like this (replace commands and paths with the actual project layout):
+
+~~~json
+{
+  "quality_checks": [
+    {"category": "test", "argv": ["python", "-m", "pytest"], "paths": ["src/**", "tests/**", "pyproject.toml"]},
+    {"category": "lint", "argv": ["ruff", "check", "src", "tests"], "paths": ["src/**", "tests/**", "pyproject.toml"]},
+    {"category": "typecheck", "argv": ["mypy", "src"], "paths": ["src/**", "pyproject.toml"]}
+  ]
+}
+~~~
+
 A project may add lint, typecheck, build, SQL validation and other checks that its actual toolchain supports. Do not declare a check merely to make the policy green.
 
 ## Template updates
