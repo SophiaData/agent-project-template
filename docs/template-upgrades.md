@@ -29,3 +29,11 @@ This is an additive engineering-governance upgrade. The project-policy.json sche
 Adopt the defensive-pattern catalog for the changed surfaces. The template verifier now checks that each documented pattern has its required sections, and template contract tests include negative controls that deliberately omit required content or introduce broken links. Review semantic applicability and implementation separately; the structural checks do not enforce application code behavior.
 
 No automatic overwrite is performed. Run the project's configured checks and review the resulting diff before merging.
+
+### V2.2 to V2.3
+
+This is an additive quality-runner upgrade. The project-policy.json schema remains version 2; existing quality_checks entries containing only category and argv remain valid and run unconditionally.
+
+Projects may add a relative slash-separated paths array to a quality check to select it only when a changed file matches. Checks without paths always run. Configure patterns to include the source, owning tests and relevant manifests, lockfiles or configuration files. When application source changes, at least one test check must match or the runner fails. Unknown Git bases and failed diff commands also fail closed.
+
+CI now fetches full Git history and supplies the pull-request base or push-before commit. Local contributors should fetch the verified base and run `scripts/run_quality.py --base <base-ref>` for committed changes; omit `--base` to run all configured checks, including checks needed while validating uncommitted work. Review each project's path selectors rather than copying the example patterns blindly.

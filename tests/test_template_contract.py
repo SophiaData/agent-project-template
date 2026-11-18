@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,7 +34,7 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.2.0')
+        self.assertEqual(version, '2.3.0')
 
     def test_technology_profiles_are_present(self):
         profiles = ('python.md', 'typescript.md', 'java.md', 'data-engineering.md')
@@ -59,6 +60,112 @@ class ProjectTemplateContract(unittest.TestCase):
         template = (ROOT / '.github/pull_request_template.md').read_text(encoding='utf-8')
         self.assertIn('## Test design', template)
         self.assertIn('## AI assistance (when applicable)', template)
+
+    def test_quality_policy_accepts_optional_path_selectors(self):
+        checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest'],
+                   'paths': ['src/**', 'tests/**/*.py', 'pyproject.toml']}]
+        self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
+
+    def test_quality_policy_rejects_unsafe_path_selectors(self):
+        for patterns in (['../**'], ['/src/**'], ['C:/src/**'], ['src\\**'], ['src//tests']):
+            checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest'],
+                       'paths': patterns}]
+            with self.subTest(patterns=patterns):
+                self.assertRaisesRegex(ValueError, 'paths', quality.validate_policy,
+                                       self.policy(checks), True)
+
+    def test_legacy_quality_checks_without_paths_remain_unconditional(self):
+        checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest']}]
+        self.assertEqual(quality.select_checks(checks, ['docs/README.md'], True), checks)
+
+    def test_path_glob_matches_root_and_nested_paths(self):
+        self.assertTrue(quality.path_matches('tests/test_api.py', 'tests/**/*.py'))
+        self.assertTrue(quality.path_matches('tests/unit/test_api.py', 'tests/**/*.py'))
+        self.assertTrue(quality.path_matches('src/api.py', 'src/**'))
+        self.assertFalse(quality.path_matches('web/app.ts', 'src/**'))
+
+    def test_diff_selection_keeps_unscoped_checks_and_matching_checks(self):
+        checks = [
+            {'category': 'test', 'argv': ['pytest'], 'paths': ['src/**', 'tests/**']},
+            {'category': 'lint', 'argv': ['ruff', 'check', '.']},
+            {'category': 'build', 'argv': ['npm', 'run', 'build'], 'paths': ['web/**']},
+        ]
+        selected = quality.select_checks(checks, ['src/api.py'], True)
+        self.assertEqual([entry['category'] for entry in selected], ['test', 'lint'])
+
+    def test_source_change_without_matching_test_fails_closed(self):
+        checks = [
+            {'category': 'test', 'argv': ['pytest'], 'paths': ['tests/**']},
+            {'category': 'lint', 'argv': ['ruff', 'check', '.'], 'paths': ['docs/**']},
+        ]
+        self.assertRaisesRegex(
+            ValueError, 'no test check matched',
+            quality.select_checks, checks, ['src/api.py'], True,
+        )
+
+    def test_data_engineering_source_extensions_require_test_checks(self):
+        checks = [{'category': 'test', 'argv': ['pytest'], 'paths': ['models/**']}]
+        self.assertEqual(quality.select_checks(checks, ['models/daily.hql'], True), checks)
+        self.assertIn('.ipynb', quality.SOURCE_EXTENSIONS)
+        self.assertIn('.sql', quality.SOURCE_EXTENSIONS)
+
+    def test_documentation_change_can_skip_unmatched_scoped_checks(self):
+        checks = [{'category': 'test', 'argv': ['pytest'], 'paths': ['src/**', 'tests/**']}]
+        self.assertEqual(quality.select_checks(checks, ['docs/README.md'], True), [])
+
+    def test_git_diff_reports_both_sides_of_a_rename(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            subprocess.run(['git', 'init'], cwd=root, check=True, capture_output=True)
+            subprocess.run(['git', 'config', 'user.email', 'template-test@example.invalid'],
+                           cwd=root, check=True, capture_output=True)
+            subprocess.run(['git', 'config', 'user.name', 'Template Test'],
+                           cwd=root, check=True, capture_output=True)
+            source = root / 'src'
+            source.mkdir()
+            old_file = source / 'old.py'
+            old_file.write_text('value = 1\n', encoding='utf-8')
+            subprocess.run(['git', 'add', '.'], cwd=root, check=True, capture_output=True)
+            subprocess.run(['git', 'commit', '-m', 'base'], cwd=root, check=True, capture_output=True)
+            base = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root, check=True,
+                                  capture_output=True, text=True).stdout.strip()
+            old_file.rename(source / 'new.py')
+            subprocess.run(['git', 'add', '-A'], cwd=root, check=True, capture_output=True)
+            subprocess.run(['git', 'commit', '-m', 'rename'], cwd=root, check=True,
+                           capture_output=True)
+            head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root, check=True,
+                                  capture_output=True, text=True).stdout.strip()
+            changed = quality.get_changed_paths(base, head, root)
+            self.assertEqual(set(changed), {'src/old.py', 'src/new.py'})
+
+    def test_git_diff_failure_does_not_silently_skip_checks(self):
+        with tempfile.TemporaryDirectory() as path:
+            self.assertRaisesRegex(ValueError, 'cannot resolve Git change scope',
+                                   quality.get_changed_paths, 'missing-base', 'HEAD', Path(path))
+
+    def test_quality_workflow_fetches_history_and_supplies_diff_base(self):
+        workflow = (ROOT / '.github/workflows/quality.yml').read_text(encoding='utf-8')
+        self.assertIn('fetch-depth: 0', workflow)
+        self.assertIn('QUALITY_BASE_SHA', workflow)
+        self.assertIn('scripts/run_quality.py --base', workflow)
+
+    def test_runner_executes_only_checks_matching_the_git_diff(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            policy = self.policy([
+                {'category': 'test', 'argv': ['python', '-m', 'pytest'],
+                 'paths': ['src/**', 'tests/**']},
+                {'category': 'lint', 'argv': ['ruff', 'check', '.'], 'paths': ['docs/**']},
+            ])
+            (root / 'project-policy.json').write_text(json.dumps(policy), encoding='utf-8')
+            with patch.object(quality, 'ROOT', root), \
+                    patch.object(quality, 'has_application_code', return_value=True), \
+                    patch.object(quality, 'get_changed_paths', return_value=['src/api.py']), \
+                    patch.object(quality.subprocess, 'run') as run:
+                run.return_value.returncode = 0
+                self.assertEqual(quality.main(['--base', 'origin/main']), 0)
+            self.assertEqual(run.call_count, 1)
+            self.assertEqual(run.call_args.args[0], ['python', '-m', 'pytest'])
 
     def test_empty_directory_has_no_application_code(self):
         with tempfile.TemporaryDirectory() as path:
@@ -154,7 +261,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.2.0', require_checks_when_code_exists=True,
+                    template_version='2.3.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 
