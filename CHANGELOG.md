@@ -1,5 +1,13 @@
 # Template changelog
 
+## 2.3.0 — 2026-11-18
+
+- Add optional relative path-glob selectors to V2 quality-check entries without changing the policy schema.
+- Add Git-diff-aware quality selection; checks without selectors continue to run unconditionally.
+- Fail closed when the requested base diff cannot be resolved or changed application source selects no test check.
+- Preserve both old and new paths for renames and add contract tests for path matching, Git diff handling and selection failures.
+- Fetch full Git history in CI and select checks from the pull-request base or push-before commit.
+
 ## 2.2.0 — 2026-11-18
 
 - Add a defensive-pattern catalog for shared state, asynchronous correctness, resource allocation, quiescent cleanup, retries, outcome reporting, trust boundaries and performance evidence.
