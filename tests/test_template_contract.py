@@ -66,7 +66,7 @@ class ProjectTemplateContract(unittest.TestCase):
         patterns = (ROOT / 'docs/defensive-patterns/general.md').read_text(encoding='utf-8')
         self.assertIn('Dependency rules and enforcement', architecture)
         self.assertIn('forbidden-import fixture', architecture)
-        self.assertIn('category', architecture)
+        self.assertIn('category `architecture`', architecture)
         self.assertIn('## Module dependencies follow permitted direction', patterns)
 
     def test_architecture_check_category_is_supported(self):
