@@ -348,6 +348,11 @@ class ProjectTemplateContract(unittest.TestCase):
             checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest']}]
             self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
 
+    def test_instruction_chain_tool_is_template_owned_not_application_source(self):
+        self.assertIn('scripts/instruction_chain.py', quality.TEMPLATE_TOOLS)
+        self.assertIn('tests/test_template_instruction_chain.py', quality.TEMPLATE_TOOLS)
+        self.assertFalse(quality.has_application_code(ROOT))
+
     def test_source_detection_handles_nonstandard_dirs(self):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
