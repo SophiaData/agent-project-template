@@ -58,4 +58,4 @@ When changing AGENTS.md, CLAUDE.md, a subtree AGENTS.md or a Skill:
 4. Run scripts/verify_project.py and the template contract tests.
 5. Review the complete diff and report which checks actually ran.
 
-The verifier treats these rules as executable governance. A green verifier proves structural consistency; it does not prove that a prose rule is complete or that a Skill's behavior is semantically correct.
+The durable policy decision is recorded in [docs/decisions/2026-11-18-agent-governance.md](decisions/2026-11-18-agent-governance.md). The verifier treats these rules as executable governance. A green verifier proves structural consistency; it does not prove that a prose rule is complete or that a Skill's behavior is semantically correct.
