@@ -131,7 +131,7 @@ class InstructionChainContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = self.make_root(temporary)
             (root / 'src').mkdir()
-            (root / 'src/AGENTS.md').write_bytes(b'\\xff')
+            (root / 'src/AGENTS.md').write_bytes(bytes([255]))
             errors = chain.audit_sources(root)
             self.assertTrue(any('UTF-8' in e for e in errors), errors)
             (root / 'src/AGENTS.md').write_text('\n\n', encoding='utf-8')
