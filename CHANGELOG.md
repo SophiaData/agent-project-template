@@ -1,5 +1,14 @@
 # Template changelog
 
+## 2.5.0 — 2026-11-18
+
+- Add executable instruction-governance checks for root AGENTS.md, CLAUDE.md compatibility entry points and project Skill ownership.
+- Discover Skills dynamically from .agents/skills instead of maintaining a hard-coded verifier allowlist.
+- Add a canonical Skill registry and a project-agent-governance workflow.
+- Reject orphan Skill directories, malformed metadata, registry drift and fixed model-role assignments.
+- Document broad-to-specific instruction hierarchy and keep tool compatibility files as thin entry points.
+- Preserve project-policy.json schema 2 and existing quality-check behavior.
+
 ## 2.4.0 — 2026-11-18
 
 - Add an architecture quality-check category for stack-native module dependency and layer-boundary guards.
