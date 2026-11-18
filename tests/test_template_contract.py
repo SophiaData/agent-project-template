@@ -61,6 +61,14 @@ class ProjectTemplateContract(unittest.TestCase):
         self.assertIn('## Test design', template)
         self.assertIn('## AI assistance (when applicable)', template)
 
+    def test_architecture_contract_requires_documented_edges_and_negative_controls(self):
+        architecture = (ROOT / 'docs/architecture.md').read_text(encoding='utf-8')
+        patterns = (ROOT / 'docs/defensive-patterns/general.md').read_text(encoding='utf-8')
+        self.assertIn('Dependency rules and enforcement', architecture)
+        self.assertIn('forbidden-import fixture', architecture)
+        self.assertIn('category', architecture)
+        self.assertIn('## Module dependencies follow permitted direction', patterns)
+
     def test_architecture_check_category_is_supported(self):
         checks = [
             {'category': 'test', 'argv': ['python', '-m', 'pytest']},
