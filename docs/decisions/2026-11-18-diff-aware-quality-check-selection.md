@@ -10,7 +10,7 @@ Running every configured check for every change wastes time in multi-language an
 
 ## Decision
 
-Keep project-policy.json schema version 2 and allow each quality check to declare an optional relative POSIX `paths` array. A check runs when any changed path matches any configured pattern. A check without `paths` always runs.
+Keep project-policy.json schema version 2 and allow each quality check to declare an optional relative slash-separated `paths` array. A check runs when any changed path matches any configured pattern. A check without `paths` always runs.
 
 The runner compares committed changes using `git diff BASE...HEAD` with rename detection disabled, so both the old and new paths participate in selection. The caller supplies a verified base ref. Without `--base`, all configured checks run. If the diff cannot be resolved, the runner fails. If application source changes but no test check is selected, the runner fails.
 
