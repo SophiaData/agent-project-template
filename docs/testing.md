@@ -28,6 +28,10 @@ For a change to an existing guard, preserve or add a negative control for the re
 
 Coverage is a diagnostic and, where configured, a quality threshold. It proves execution, not correctness. Do not add meaningless tests to hit a percentage or delete tests to silence a failure. Set thresholds according to risk, language, generated code and project maturity; this template does not impose one universal percentage.
 
+## Data and streaming systems
+
+Test data grain, duplicates, null handling, late and out-of-order events, time zones, partition boundaries, idempotency, replay, checkpoint/restart, schema evolution and sink semantics where relevant. Use isolated test data and verify both result values and side effects. Apply the [data engineering defensive patterns](defensive-patterns/data-engineering.md) to the relevant data contract and failure boundaries.
+
 ## Test environments
 
 Document required runtimes, services, credentials and fixtures. CI must install the dependencies needed by the checks it claims to run. A skipped integration test or unavailable engine must be reported explicitly; a local mock does not prove a live service or production topology.
