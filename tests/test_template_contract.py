@@ -103,6 +103,12 @@ class ProjectTemplateContract(unittest.TestCase):
             quality.select_checks, checks, ['src/api.py'], True,
         )
 
+    def test_data_engineering_source_extensions_require_test_checks(self):
+        checks = [{'category': 'test', 'argv': ['pytest'], 'paths': ['models/**']}]
+        self.assertEqual(quality.select_checks(checks, ['models/daily.hql'], True), checks)
+        self.assertIn('.ipynb', quality.SOURCE_EXTENSIONS)
+        self.assertIn('.sql', quality.SOURCE_EXTENSIONS)
+
     def test_documentation_change_can_skip_unmatched_scoped_checks(self):
         checks = [{'category': 'test', 'argv': ['pytest'], 'paths': ['src/**', 'tests/**']}]
         self.assertEqual(quality.select_checks(checks, ['docs/README.md'], True), [])
