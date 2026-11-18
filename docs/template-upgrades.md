@@ -34,6 +34,6 @@ No automatic overwrite is performed. Run the project's configured checks and rev
 
 This is an additive quality-runner upgrade. The project-policy.json schema remains version 2; existing quality_checks entries containing only category and argv remain valid and run unconditionally.
 
-Projects may add a relative POSIX paths array to a quality check to select it only when a changed file matches. Checks without paths always run. Configure patterns to include the source, owning tests and relevant manifests, lockfiles or configuration files. When application source changes, at least one test check must match or the runner fails. Unknown Git bases and failed diff commands also fail closed.
+Projects may add a relative slash-separated paths array to a quality check to select it only when a changed file matches. Checks without paths always run. Configure patterns to include the source, owning tests and relevant manifests, lockfiles or configuration files. When application source changes, at least one test check must match or the runner fails. Unknown Git bases and failed diff commands also fail closed.
 
 CI now fetches full Git history and supplies the pull-request base or push-before commit. Local contributors should fetch the verified base and run scripts/run_quality.py --base <base-ref> for committed changes; omit --base to run all configured checks, including checks needed while validating uncommitted work. Review each project's path selectors rather than copying the example patterns blindly.
