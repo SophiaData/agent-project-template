@@ -1,7 +1,7 @@
 # Decision: project-owned architecture boundary checks
 
 - Date: 2026-11-18
-- Status: Proposed
+- Status: Accepted
 - Owners: Project maintainers
 
 ## Problem and context
