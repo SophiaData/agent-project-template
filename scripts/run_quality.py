@@ -38,14 +38,14 @@ def has_application_code(root=ROOT):
 
 
 def validate_paths(paths, index):
-    """Validate relative POSIX glob patterns used to select a quality check."""
+    """Validate relative slash-separated glob patterns used to select a quality check."""
     if not isinstance(paths, list) or not paths:
         raise ValueError(f'quality_checks[{index}].paths must be a nonempty array')
     for pattern in paths:
         if not isinstance(pattern, str) or not pattern.strip():
             raise ValueError(f'quality_checks[{index}].paths must contain nonempty strings')
         if pattern.startswith('/') or '\\' in pattern or '\0' in pattern:
-            raise ValueError(f'quality_checks[{index}].paths must use relative POSIX patterns')
+            raise ValueError(f'quality_checks[{index}].paths must use relative slash-separated patterns')
         parts = pattern.split('/')
         if any(part in {'', '.', '..'} for part in parts):
             raise ValueError(f'quality_checks[{index}].paths contains an unsafe path segment')
