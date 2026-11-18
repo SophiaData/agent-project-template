@@ -93,6 +93,20 @@ class ProjectTemplateContract(unittest.TestCase):
             self.assertTrue(any('missing from registry' in error for error in errors), errors)
             self.assertTrue(any('missing directory' in error for error in errors), errors)
 
+    def test_skill_verifier_rejects_malformed_metadata(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            skill = root / '.agents/skills/sample-check'
+            skill.mkdir(parents=True)
+            (skill / 'SKILL.md').write_text('# Missing frontmatter\n', encoding='utf-8')
+            (root / '.agents/skills/README.md').write_text(
+                '# Project Skills\n\n'
+                '- [sample-check](sample-check/SKILL.md) — Validate a sample project change.\n',
+                encoding='utf-8',
+            )
+            errors = []
+            verify.verify_skills(root, errors)
+            self.assertTrue(any('Bad skill metadata' in error for error in errors), errors)
     def test_skill_verifier_rejects_model_role_assignment(self):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
