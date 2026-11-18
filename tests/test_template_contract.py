@@ -67,7 +67,7 @@ class ProjectTemplateContract(unittest.TestCase):
         self.assertEqual(quality.validate_policy(self.policy(checks), True), checks)
 
     def test_quality_policy_rejects_unsafe_path_selectors(self):
-        for patterns in (['../**'], ['/src/**'], ['src\\**'], ['src//tests']):
+        for patterns in (['../**'], ['/src/**'], ['C:/src/**'], ['src\\**'], ['src//tests']):
             checks = [{'category': 'test', 'argv': ['python', '-m', 'pytest'],
                        'paths': patterns}]
             with self.subTest(patterns=patterns):
