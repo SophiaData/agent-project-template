@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-"""Execute declared quality gates; never infer success from an empty test list."""
+"""Execute declared project quality gates; never infer success from an empty test list."""
 import json
 import os
 from pathlib import Path
@@ -49,8 +49,6 @@ def validate_policy(policy, has_code):
             raise ValueError(f'quality_checks[{i}] has unsupported category')
         if not isinstance(argv, list) or not argv or not all(isinstance(a, str) and a for a in argv):
             raise ValueError(f'quality_checks[{i}] argv must contain nonempty tokens')
-        # Obvious no-op checks must not count as test evidence. This is not a
-        # semantic proof that an arbitrary test command is meaningful.
         if argv[0] in {'true', 'echo', 'printf', ':'} or '-c' in argv:
             raise ValueError(f'quality_checks[{i}] looks like a placeholder/no-op')
         kinds.add(kind)

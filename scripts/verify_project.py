@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-"""Verify the V2 project governance contract, not application behavior."""
+"""Verify the reusable engineering standards template contract."""
 import json
 from pathlib import Path
 import re
@@ -9,19 +9,30 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = [
-    'AGENTS.md', 'CLAUDE.md', 'README.md', 'TEMPLATE_VERSION',
-    'docs/architecture.md', 'docs/development.md', 'docs/testing.md',
-    'docs/template-upgrades.md', '.github/pull_request_template.md',
-    '.github/workflows/quality.yml', 'project-policy.json',
+    'AGENTS.md', 'CLAUDE.md', 'CONTRIBUTING.md', 'README.md', 'TEMPLATE_VERSION',
+    'docs/AGENTS.md', 'docs/architecture.md', 'docs/development.md',
+    'docs/coding-standards.md', 'docs/testing.md', 'docs/error-handling.md',
+    'docs/documentation.md', 'docs/compatibility.md', 'docs/git-workflow.md',
+    'docs/template-upgrades.md', 'docs/decisions/README.md',
+    'docs/decisions/template.md', 'docs/standards/README.md',
+    'docs/standards/python.md', 'docs/standards/typescript.md',
+    'docs/standards/java.md', 'docs/standards/data-engineering.md',
+    '.github/pull_request_template.md', '.github/workflows/quality.yml',
+    'project-policy.json',
     '.agents/skills/project-plan/SKILL.md',
     '.agents/skills/project-implement/SKILL.md',
     '.agents/skills/project-review/SKILL.md',
     '.agents/skills/project-pre-pr/SKILL.md',
+    '.agents/skills/project-doc-writing/SKILL.md',
+    '.agents/skills/project-error-handling/SKILL.md',
+    '.agents/skills/project-simplification/SKILL.md',
+    '.agents/skills/project-upgrade-guide/SKILL.md',
 ]
 
 
 def verify(root=ROOT):
     errors = []
+    root = root.resolve()
     for rel in REQUIRED:
         file = root / rel
         if not file.is_file():
@@ -29,7 +40,10 @@ def verify(root=ROOT):
             continue
         body = file.read_text(encoding='utf-8')
         if rel.endswith('/SKILL.md'):
-            match = re.match(r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n', body)
+            match = re.match(
+                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
+                body,
+            )
             if not match or match.group(1) != file.parent.name:
                 errors.append(f'Bad skill metadata: {rel}')
         for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
@@ -37,7 +51,7 @@ def verify(root=ROOT):
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
                 continue
             location = (file.parent / unquote(link)).resolve()
-            if not location.is_relative_to(root.resolve()) or not location.exists():
+            if not location.is_relative_to(root) or not location.exists():
                 errors.append(f'Broken/unsafe link: {rel} => {href}')
     try:
         policy = json.loads((root / 'project-policy.json').read_text(encoding='utf-8'))

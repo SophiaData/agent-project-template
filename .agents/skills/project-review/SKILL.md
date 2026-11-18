@@ -1,13 +1,25 @@
 ---
 name: project-review
-description: Use for independent code review against the original plan, actual Git diff, regression evidence, security and compatibility.
+description: Use for an independent review of the actual diff, architecture fit, correctness, security, compatibility, tests and operational risks.
 ---
 
-# Independent review
+# Engineering code review
 
-1. Read `AGENTS.md`, acceptance criteria and actual Git diff.
-2. Inspect relevant surrounding code and tests; do not trust worker summaries as proof.
-3. Assess correctness, race/error paths, security, contracts, migration and observability.
-4. Verify reported checks/CI are real and separate static evidence from runtime smoke testing.
-5. Return `PASS`, `CHANGES_REQUESTED` or `BLOCKED` with specific file findings.
-6. AI PASS does not replace repo protection or human approval.
+Review the actual diff against the base branch, accepted requirements and observable acceptance criteria. Do not treat author summaries or test names as proof.
+
+## Review dimensions
+
+- **Correctness:** normal, boundary, invalid-input and failure paths; data integrity; deterministic behavior.
+- **Ownership:** module boundaries, dependency direction, state ownership, lifecycle and public API necessity.
+- **Concurrency:** races, cancellation, timeout, resource acquisition and quiescent cleanup.
+- **Errors:** structured failure, cause preservation, safe retry, partial effects and visible unknown outcomes.
+- **Security:** trust boundaries, authorization, secret handling, filesystem/network exposure and dependency changes.
+- **Compatibility:** APIs, configuration, event and persistence formats, database migrations and supported runtimes.
+- **Tests:** real execution path, meaningful assertions, regression strength, isolation and teardown.
+- **Operations:** logs, metrics, alerts, performance, rollback and recovery.
+- **Documentation:** owning docs, examples, decision records and upgrade instructions match shipped behavior.
+- **Scope:** speculative generality, duplicate representations, unrelated refactors and unnecessary dependencies.
+
+## Findings
+
+Report actionable findings with severity, file/line, impact and a concrete correction. Distinguish blocking defects from follow-up suggestions. If no blocking finding remains, state what was reviewed and which evidence was inspected. Do not claim unrun checks passed.

@@ -1,26 +1,37 @@
-# SophiaData Project Agent Rules
+# Engineering standards
 
-Applies to GPT, Claude Code, Codex, DSH and other coding assistants working on this repository.
+This repository is a stack-neutral engineering standards template. These rules apply to every contributor and coding assistant. This file is the concise entry point; the linked documents own the detailed standards.
 
-- Read `docs/architecture.md`, `docs/development.md` and `docs/testing.md` before substantive changes.
-- Follow the project plan and acceptance criteria; inspect source and tests before editing.
-- Prefer existing components and public interfaces. Keep changes scoped; avoid speculative refactors.
-- Do not record credentials, tokens, cookies, or local environment secrets in code, logs or PRs.
-- Work on a topic branch/worktree. Preserve unrelated changes.
-- Add regression tests for behavior changes. Never invent results or downgrade a check to pass.
-- Reviewer must inspect the actual diff and test evidence independently, not just the worker summary.
-- Do not auto-merge, deploy, release, publish, or modify production without explicit authorization.
-- For DataWorks and similar production systems, modify drafts only when authorized; never submit/publish production nodes automatically.
-- CI is the executable quality gate; instructions and Skills alone do not enforce behavior.
-- Use `.agents/skills/` instructions for planning, implementation, review and PR preparation.
+## Before changing code
 
-This is a **new-project baseline**. Add technology-specific rules after identifying the project stack.
+- Read docs/architecture.md, docs/coding-standards.md, docs/development.md and docs/testing.md. Read the relevant technology profile under docs/standards/.
+- Trace the existing implementation, callers, tests, configuration and deployment path before proposing a change.
+- State scope, non-goals, acceptance criteria and compatibility or data risks for substantive work.
 
-## V2 policy
+## Engineering rules
 
-Before shipping application code, run `python scripts/configure_project.py`
-with the real project name/stack, configure non-placeholder tests in the
-`quality_checks` array, and run the template contract tests. Template version
-is tracked in `TEMPLATE_VERSION`; updates require a reviewed PR following
-[upgrade guidance](docs/template-upgrades.md). The declared command categories
-are an audit signal, not evidence that an arbitrary test command is meaningful.
+- Preserve module ownership and dependency direction. Put behavior beside the capability that owns its data and lifecycle.
+- Prefer the smallest complete change. Avoid speculative abstractions, duplicate representations and unrelated refactors.
+- Make contracts explicit: types, inputs, outputs, invariants, ownership, side effects and failure behavior.
+- Validate untrusted inputs at real trust boundaries. Do not add redundant validation to trusted, typed same-process calls without a demonstrated need.
+- Treat asynchronous work, concurrency, cancellation, resource cleanup and shutdown as correctness requirements.
+- Handle failures explicitly. Do not silently swallow errors or retry operations without proving safe repetition.
+- Protect credentials and sensitive data. Never commit secrets or expose them in logs, fixtures, screenshots or PRs.
+- Add or update regression tests for behavior changes. Tests must assert observable behavior, not merely repeat implementation details.
+- Update the owning documentation and compatibility notes in the same change. Read docs/AGENTS.md when editing documentation. Record durable design decisions in docs/decisions/.
+- Report only checks actually run. Distinguish PASS, FAIL, NOT RUN and BLOCKED; include environment and relevant evidence.
+
+## Delivery boundaries
+
+- Work on a focused topic branch and preserve unrelated changes.
+- Review the actual diff against the intended scope before opening a PR.
+- CI and AI review are evidence, not authorization to merge, deploy, release or publish.
+- Do not modify production systems without explicit authorization. For DataWorks, draft SQL and permitted scheduling/dependency configuration may be prepared when authorized; never submit or publish production nodes automatically.
+
+## Quality commands
+
+Run python scripts/verify_project.py and the template contract tests for changes to this template. Run python scripts/run_quality.py for configured project checks. Select additional checks based on the changed behavior; do not default to an unrelated full suite or claim unexecuted checks passed.
+
+## Reusable workflows
+
+Use the applicable Skill in .agents/skills/ for planning, implementation, review, pre-push verification, documentation, error handling, simplification or upgrade guidance. Skills describe task workflows; they do not define fixed GPT, Claude, Codex or other agent roles.

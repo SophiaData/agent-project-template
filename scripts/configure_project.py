@@ -30,13 +30,11 @@ def candidate_checks(root, stack):
             return [{'category': 'test', 'argv': [manager, 'test']}]
     if stack == 'java' and (root / 'pom.xml').is_file():
         return [{'category': 'test', 'argv': ['mvn', 'test']}]
-    # Python/data tests require project-specific dependencies/credentials;
-    # never silently infer that pytest/dbt exists or will pass.
     return []
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Configure SophiaData V2 project metadata')
+    parser = argparse.ArgumentParser(description='Configure project identity and stack metadata')
     parser.add_argument('--name', required=True)
     parser.add_argument('--stack', choices=['auto', 'generic', 'python', 'node', 'java', 'data', 'mixed'], default='auto')
     parser.add_argument('--apply', action='store_true', help='Write placeholder metadata; otherwise dry-run')

@@ -1,22 +1,27 @@
 ## Motivation
 
-<!-- Problem, issue, acceptance criteria -->
+<!-- Problem, context and why this change is needed. -->
 
-## Changes
+## Scope and design
 
-<!-- Modules/files, compatibility and data contracts -->
+<!-- Acceptance criteria, affected modules, non-goals and key design decisions. -->
 
-## Testing
+## Compatibility and operational impact
 
-| Command | Result (PASS / FAIL / NOT RUN) | Evidence |
+<!-- Public API, data/schema, migration, rollout, rollback or recovery implications. -->
+
+## Verification evidence
+
+| Command / check | Result (PASS / FAIL / NOT RUN / BLOCKED) | Environment / evidence |
 | --- | --- | --- |
-| `python scripts/verify_project.py` | NOT RUN | |
-| `python scripts/run_quality.py` | NOT RUN | |
+| python scripts/verify_project.py | NOT RUN | |
+| python -m unittest discover -s tests -p 'test_template_*.py' -v | NOT RUN | |
+| python scripts/run_quality.py | NOT RUN | |
 
-## AI Usage
+## Review
 
-<!-- Which roles/models were used? Did reviewer inspect actual Git diff? -->
+<!-- Confirm actual diff review, findings resolved and remaining limitations. -->
 
-## Risks / release boundary
+## Risks and release boundary
 
-<!-- Known limitations, rollout/rollback; no automatic production publishing -->
+<!-- Known risks, production approval requirements and next safe action. -->
