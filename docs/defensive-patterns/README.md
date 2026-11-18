@@ -2,6 +2,16 @@
 
 Defensive patterns are requirements for recurring defect classes, not general style preferences. Apply a rule when its stated trigger matches the code being changed; do not impose unrelated rules on every module.
 
+## Guiding principles
+
+- **Make correctness explicit:** encode ordering, lifecycle, state transitions and preconditions in the design rather than relying on callback timing.
+- **Keep one source of truth:** give each fact and shared mutable value one authoritative owner.
+- **Extend through the owning boundary:** add behavior through the interface or module responsible for it instead of spreading special cases across unrelated callers.
+- **Keep the change focused:** the diff should contain the smallest complete set of changes needed for the stated behavior, with migrations and compatibility work made explicit.
+- **Require falsifiable evidence:** reviewers should be able to reproduce a claim through a test, check, comparison or measurement.
+
+These are review heuristics. The individual patterns below define when a rule applies, what must hold and what evidence is sufficient.
+
 Each pattern records:
 - **Applies when:** the code or change condition that activates the rule.
 - **Required invariant:** what must remain true.
