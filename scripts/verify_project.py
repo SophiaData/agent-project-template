@@ -8,6 +8,17 @@ import sys
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
+SKILL_ROOT = '.agents/skills'
+SKILL_REGISTRY = '.agents/skills/README.md'
+SKILL_NAME_RE = re.compile(r'[a-z][a-z0-9-]*')
+ROLE_ASSIGNMENT_RE = re.compile(
+    r'(?i)\b(?:gpt|claude|codex|deepseek|dsh)\b\s*(?:is|as|acts as|serves as|负责|担任|=|:)\s*'
+    r'(?:planner|implementer|reviewer|规划|开发|审核|审查)\b'
+)
+ROOT_AGENT_SECTIONS = (
+    'Before changing code', 'Engineering rules', 'Delivery boundaries',
+    'Quality commands', 'Reusable workflows',
+)
 DEFENSIVE_PATTERN_FILES = (
     'docs/defensive-patterns/general.md',
     'docs/defensive-patterns/data-engineering.md',
@@ -35,15 +46,114 @@ REQUIRED = [
     *DEFENSIVE_PATTERN_FILES,
     '.github/pull_request_template.md', '.github/workflows/quality.yml',
     'project-policy.json',
-    '.agents/skills/project-plan/SKILL.md',
-    '.agents/skills/project-implement/SKILL.md',
-    '.agents/skills/project-review/SKILL.md',
-    '.agents/skills/project-pre-pr/SKILL.md',
-    '.agents/skills/project-doc-writing/SKILL.md',
-    '.agents/skills/project-error-handling/SKILL.md',
-    '.agents/skills/project-simplification/SKILL.md',
-    '.agents/skills/project-upgrade-guide/SKILL.md',
+    SKILL_REGISTRY, 'docs/agent-governance.md',
 ]
+
+def _parse_skill_metadata(body):
+    """Return (name, description, content) from the supported SKILL.md header."""
+    match = re.match(
+        r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
+        body,
+    )
+    if not match:
+        return None
+    return match.group(1), match.group(2).strip(), body[match.end():]
+
+
+def verify_agent_instructions(root, errors):
+    """Verify the instruction hierarchy and agent-neutral compatibility entry points."""
+    agent_file = root / 'AGENTS.md'
+    if agent_file.is_file():
+        body = agent_file.read_text(encoding='utf-8')
+        for section in ROOT_AGENT_SECTIONS:
+            if not re.search(rf'(?m)^## {re.escape(section)}\s*(?=\r?\n|\Z)', body):
+                errors.append(f'AGENTS.md missing required section: {section}')
+        if len(body.splitlines()) > 120:
+            errors.append('AGENTS.md is no longer a concise standing-order entry point')
+        if ROLE_ASSIGNMENT_RE.search(body):
+            errors.append('AGENTS.md assigns fixed roles to a model or agent')
+    claude_file = root / 'CLAUDE.md'
+    if claude_file.is_file():
+        body = claude_file.read_text(encoding='utf-8')
+        if 'AGENTS.md' not in body:
+            errors.append('CLAUDE.md must point to the shared AGENTS.md source')
+        if 'shared source of repository rules' not in body:
+            errors.append('CLAUDE.md must declare AGENTS.md as the shared rule source')
+        if ROLE_ASSIGNMENT_RE.search(body):
+            errors.append('CLAUDE.md assigns fixed roles to a model or agent')
+        if len(body.splitlines()) > 40:
+            errors.append('CLAUDE.md compatibility entry point is too large; keep engineering rules in AGENTS.md')
+    return errors
+
+
+def verify_skills(root, errors):
+    """Discover every project Skill and verify metadata plus the canonical registry."""
+    skills_root = root / SKILL_ROOT
+    registry = root / SKILL_REGISTRY
+    if not skills_root.is_dir():
+        errors.append(f'Missing: {SKILL_ROOT}')
+        return errors
+    if not registry.is_file():
+        errors.append(f'Missing: {SKILL_REGISTRY}')
+        return errors
+
+    discovered = {}
+    for entry in sorted(skills_root.iterdir(), key=lambda item: item.name):
+        if not entry.is_dir():
+            continue
+        if not SKILL_NAME_RE.fullmatch(entry.name):
+            errors.append(f'Invalid Skill directory name: {entry.relative_to(root).as_posix()}')
+            continue
+        skill_file = entry / 'SKILL.md'
+        if not skill_file.is_file():
+            errors.append(f'Skill directory missing SKILL.md: {entry.relative_to(root).as_posix()}')
+            continue
+        body = skill_file.read_text(encoding='utf-8')
+        metadata = _parse_skill_metadata(body)
+        rel = skill_file.relative_to(root).as_posix()
+        if metadata is None:
+            errors.append(f'Bad skill metadata: {rel}')
+            continue
+        name, description, content = metadata
+        if name != entry.name:
+            errors.append(f'Skill name does not match directory: {rel}')
+        if not description:
+            errors.append(f'Skill description is empty: {rel}')
+        if not content.strip() or not re.search(r'(?m)^# .+\S.*(?=\r?\n|\Z)', content):
+            errors.append(f'Skill body must contain a non-empty level-1 heading: {rel}')
+        if ROLE_ASSIGNMENT_RE.search(body):
+            errors.append(f'Skill assigns fixed roles to a model or agent: {rel}')
+        for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
+            link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
+            if not link or link.startswith(('https:', 'http:', 'mailto:')):
+                continue
+            location = (skill_file.parent / unquote(link)).resolve()
+            if not location.is_relative_to(root) or not location.exists():
+                errors.append(f'Broken/unsafe link: {rel} => {href}')
+        discovered[entry.name] = rel
+
+    registry_body = registry.read_text(encoding='utf-8')
+    registry_pattern = re.compile(
+        r'(?m)^\s*-\s+\[([a-z][a-z0-9-]*)\]\(([^)]+)\)\s+—\s+(.+?)\s*(?=\r?\n|\Z)'
+    )
+    registered = {}
+    for name, target, description in registry_pattern.findall(registry_body):
+        if name in registered:
+            errors.append(f'Duplicate Skill registry entry: {name}')
+        registered[name] = target
+        expected = f'{name}/SKILL.md'
+        if target.split('#', 1)[0] != expected:
+            errors.append(f'Skill registry target mismatch: {name} => {target}')
+        if not description.strip():
+            errors.append(f'Skill registry description is empty: {name}')
+
+    missing = sorted(set(discovered) - set(registered))
+    orphaned = sorted(set(registered) - set(discovered))
+    for name in missing:
+        errors.append(f'Skill missing from registry: {name}')
+    for name in orphaned:
+        errors.append(f'Skill registry points to missing directory: {name}')
+    return errors
 
 
 def verify_defensive_patterns(root, errors):
@@ -78,13 +188,6 @@ def verify(root=ROOT):
             errors.append(f'Missing: {rel}')
             continue
         body = file.read_text(encoding='utf-8')
-        if rel.endswith('/SKILL.md'):
-            match = re.match(
-                r'\A---\r?\nname: ([a-z][a-z0-9-]*)\r?\ndescription: ([^\r\n]+)\r?\n---\r?\n',
-                body,
-            )
-            if not match or match.group(1) != file.parent.name:
-                errors.append(f'Bad skill metadata: {rel}')
         for href in re.findall(r'!?\[[^]]*\]\(([^)]+)\)', body):
             link = href.split('#', 1)[0].split('?', 1)[0].split(' "', 1)[0]
             if not link or link.startswith(('https:', 'http:', 'mailto:')):
@@ -92,6 +195,8 @@ def verify(root=ROOT):
             location = (file.parent / unquote(link)).resolve()
             if not location.is_relative_to(root) or not location.exists():
                 errors.append(f'Broken/unsafe link: {rel} => {href}')
+    verify_agent_instructions(root, errors)
+    verify_skills(root, errors)
     verify_defensive_patterns(root, errors)
     try:
         policy = json.loads((root / 'project-policy.json').read_text(encoding='utf-8'))

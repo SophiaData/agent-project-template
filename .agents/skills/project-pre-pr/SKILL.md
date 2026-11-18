@@ -12,6 +12,7 @@ description: Use before opening or updating a pull request to verify scope, qual
 5. When module dependencies change, verify docs/architecture.md records the permitted direction and run the configured architecture check. For each new or changed automated guard, run its negative-control test and confirm the intended violation is rejected for the expected reason.
 6. Fetch and verify the live PR base. Run `python scripts/run_quality.py --base <verified-base-ref>` for committed branch changes; omit `--base` to run all configured checks or when validating uncommitted work. If the diff cannot be resolved, stop and fix the base rather than treating the scope as empty.
 7. Inspect the selected and skipped checks, command output and CI evidence. Confirm that a source change selected at least one test check. Record PASS, FAIL, NOT RUN or BLOCKED accurately.
-8. Check tests, documentation, decision records, compatibility and upgrade guidance.
-9. Complete the PR template with scope, risks and exact evidence.
-10. Do not merge, deploy, release, publish or submit production changes without separate authorization.
+8. When AGENTS.md, CLAUDE.md or Skills change, run the agent-governance Skill or equivalent verifier path and inspect the registry and instruction hierarchy.
+9. Check tests, documentation, decision records, compatibility and upgrade guidance.
+10. Complete the PR template with scope, risks and exact evidence.
+11. Do not merge, deploy, release, publish or submit production changes without separate authorization.

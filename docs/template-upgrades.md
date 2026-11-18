@@ -38,6 +38,10 @@ Projects may add a relative slash-separated paths array to a quality check to se
 
 CI now fetches full Git history and supplies the pull-request base or push-before commit. Local contributors should fetch the verified base and run `scripts/run_quality.py --base <base-ref>` for committed changes; omit `--base` to run all configured checks, including checks needed while validating uncommitted work. Review each project's path selectors rather than copying the example patterns blindly.
 
+### V2.4 to V2.5
+
+This upgrade adds executable governance for instruction files and project Skills. The project-policy.json schema remains version 2. The verifier discovers every direct child under .agents/skills, requires `<name>/SKILL.md`, validates frontmatter name and description, and checks the canonical .agents/skills/README.md registry. Root AGENTS.md is checked for the standing-order sections and concise size; CLAUDE.md is treated as a compatibility entry point that must point to the shared AGENTS.md policy. Fixed model-role assignments are rejected. Existing projects should add the registry and update their local verifier expectations through a reviewed diff.
+
 ### V2.3 to V2.4
 
 This is an additive architecture-governance upgrade. The project-policy.json schema remains version 2. Existing quality-check entries remain valid. The runner adds the `architecture` category for stack-native module and layer dependency checks.

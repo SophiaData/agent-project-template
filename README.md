@@ -18,7 +18,8 @@ This repository is a reusable, stack-neutral engineering standards baseline. It 
 - **docs/compatibility.md** — API, schema, persistence and upgrade policy.
 - **docs/git-workflow.md** and **CONTRIBUTING.md** — branch, commit and pull-request conventions.
 - **docs/decisions/** — durable architecture and engineering decisions.
-- **.agents/skills/** — reusable task workflows; they do not assign work to a particular model or agent.
+- **docs/agent-governance.md** — instruction hierarchy, compatibility-entry-point rules and Skill ownership.
+- **.agents/skills/README.md** and **.agents/skills/** — the canonical Skill registry and reusable task workflows; Skills do not assign work to a particular model or agent.
 - **scripts/** and **.github/workflows/** — executable governance checks and CI.
 
 ## Initialize a repository created from this template
