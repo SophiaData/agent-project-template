@@ -50,8 +50,18 @@ The template runner executes declared argv commands and checks their exit status
 
 Configure the framework's fail-on-empty behavior when available. Otherwise use a project-owned wrapper or report that validates the discovered test count for that framework. Keep that validation close to the test command; do not guess test counts by parsing arbitrary output in the generic runner.
 
+## Change-aware quality check selection
+
+A quality-check entry may add an optional `paths` array of relative POSIX glob patterns. A check runs when any changed file matches any listed pattern; `*` and `?` match within one path segment, while `**` as a complete segment matches zero or more path segments. A check without `paths` always runs. Existing schema V2 entries with only `category` and `argv` remain valid.
+
+Run `python scripts/run_quality.py --base <verified-base-ref>` to compare committed changes from `BASE...HEAD` and select matching checks. Omit `--base` to run every configured check. The diff disables rename detection so both the old and new paths participate in selection. The base ref must exist locally; an unresolved diff fails instead of silently skipping checks. The comparison covers committed Git history, not staged or untracked work, so use the full run while validating uncommitted changes.
+
+When application source exists and a source file changes, at least one selected `test` check is required. If no test check matches, the runner fails and asks for the source/test paths to be corrected or for an explicit full run. This protects against path selectors that accidentally omit changed source. Include relevant test files, project manifests, lockfiles, configuration and generated interfaces in the patterns for each check; the runner does not infer dependency graphs or test ownership.
+
+CI fetches full Git history and supplies the PR base commit or push-before commit. The template contract tests and governance verifier run independently of path selection.
+
 ## Evidence and quality gates
 
-Configure real commands in project-policy.json as category plus argv tokens. At least one test-category check is required once application source exists. The runner does not invoke a shell and rejects obvious no-op commands, but test discovery and assertion quality remain project responsibilities.
+Configure real commands in project-policy.json as category plus argv tokens, with optional `paths` selectors. At least one test-category check is required once application source exists. The runner does not invoke a shell and rejects obvious no-op commands, but test discovery and assertion quality remain project responsibilities.
 
 For each PR, report exact commands, PASS / FAIL / NOT RUN / BLOCKED status, runtime and relevant output or CI link. Distinguish static analysis, unit tests, integration tests, end-to-end tests and manual validation.
