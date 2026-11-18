@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -141,6 +142,24 @@ class ProjectTemplateContract(unittest.TestCase):
         self.assertIn('fetch-depth: 0', workflow)
         self.assertIn('QUALITY_BASE_SHA', workflow)
         self.assertIn('scripts/run_quality.py --base', workflow)
+
+    def test_runner_executes_only_checks_matching_the_git_diff(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            policy = self.policy([
+                {'category': 'test', 'argv': ['python', '-m', 'pytest'],
+                 'paths': ['src/**', 'tests/**']},
+                {'category': 'lint', 'argv': ['ruff', 'check', '.'], 'paths': ['docs/**']},
+            ])
+            (root / 'project-policy.json').write_text(json.dumps(policy), encoding='utf-8')
+            with patch.object(quality, 'ROOT', root), \
+                    patch.object(quality, 'has_application_code', return_value=True), \
+                    patch.object(quality, 'get_changed_paths', return_value=['src/api.py']), \
+                    patch.object(quality.subprocess, 'run') as run:
+                run.return_value.returncode = 0
+                self.assertEqual(quality.main(['--base', 'origin/main']), 0)
+            self.assertEqual(run.call_count, 1)
+            self.assertEqual(run.call_args.args[0], ['python', '-m', 'pytest'])
 
     def test_empty_directory_has_no_application_code(self):
         with tempfile.TemporaryDirectory() as path:
