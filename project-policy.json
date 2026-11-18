@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "template_version": "2.3.0",
+  "template_version": "2.4.0",
   "project_name": "PROJECT_NAME",
   "project_type": "PROJECT_TYPE",
   "require_checks_when_code_exists": true,
