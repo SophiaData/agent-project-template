@@ -34,7 +34,7 @@ class ProjectTemplateContract(unittest.TestCase):
         version = (ROOT / 'TEMPLATE_VERSION').read_text(encoding='utf-8').strip()
         self.assertEqual(policy['schema_version'], 2)
         self.assertEqual(policy['template_version'], version)
-        self.assertEqual(version, '2.5.0')
+        self.assertEqual(version, '2.6.0')
 
     def test_agent_governance_contract_is_valid(self):
         errors = []
@@ -429,7 +429,7 @@ class ProjectTemplateContract(unittest.TestCase):
     @staticmethod
     def policy(checks):
         return dict(schema_version=2, project_name='sample', project_type='python',
-                    template_version='2.5.0', require_checks_when_code_exists=True,
+                    template_version='2.6.0', require_checks_when_code_exists=True,
                     quality_checks=checks, release_mode='manual')
 
 
